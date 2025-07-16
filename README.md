@@ -10,7 +10,6 @@ Minecraft-Revamped is a Minecraft clone (that I am remaking because my last one 
 - **Multithreading Support:** Efficiently handles terrain and chunk generation with thread pooling 
 - **Rendering:** Uses OpenGL 
 - **Testing:** Uses ImGui for runtime debuging, testing, and analysis, https://github.com/ocornut/imgui
-- **Networking:** Going to support multiplayer, currently looking at implimenting https://github.com/ValveSoftware/GameNetworkingSockets, I have some src files with networking already, I am using that as a refrence from my previous clone
 - **Models:** Using assimp, my previous project handled model loading just fine for now
 
 ## Installation
