@@ -1,4 +1,4 @@
-`# Minecraft-Revamped
+# Minecraft-Revamped
 
 ## Description
 
