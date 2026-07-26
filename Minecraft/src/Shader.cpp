@@ -11,7 +11,7 @@ std::unordered_map<std::string, Shader*> Shader::m_ShaderLocationCache = {};
 Shader::Shader(const std::string& filepath) : m_UniformLocationCache()
 {
 
-	// Read vertexFile and fragmentFile 
+	// Read vertexFile and fragmentFile
 	ShaderProgramSource shaderCode = get_file_contents(filepath);
 
 
@@ -95,7 +95,7 @@ ShaderProgramSource get_file_contents(const std::string& filename)
 
 				}
 			}
-			
+
 			else {
 				ss[(int)type] << line << "\n";
 			}
@@ -172,10 +172,10 @@ GLint Shader::getUniform(const std::string& name)
 {
 	if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
 		return m_UniformLocationCache[name];
-	
+
 	GLint loc = glGetUniformLocation(m_ID, name.c_str());
 	if (loc == -1)
-		std::cout << "Warning: uniform: " << name << " does not exist" << std::endl; 
+		std::cout << "Warning: uniform: " << name << " does not exist" << std::endl;
 	else
 		m_UniformLocationCache[name] = loc;
 
@@ -189,7 +189,7 @@ Shader* Shader::getShader(const std::string& name)
 
 	else
 		std::cout << "Couldnt find shader name ERROR ERROR ";
-	
+
 
 	return nullptr;
 }
@@ -243,4 +243,3 @@ void Shader::compileErrors(unsigned int shader, const char* type)
 		}
 	}
 }
-

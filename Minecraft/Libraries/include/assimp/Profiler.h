@@ -100,4 +100,3 @@ private:
 }
 
 #endif // AI_INCLUDED_PROFILER_H
-

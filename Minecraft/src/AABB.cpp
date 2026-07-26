@@ -19,9 +19,9 @@ bool AABB::collides(const glm::vec3& point) const
 		// collides
 		return true;
 		}
-	
-	// doesnt collide return false 
-	return false;	
+
+	// doesnt collide return false
+	return false;
 
 }
 

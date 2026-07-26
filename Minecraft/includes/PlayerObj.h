@@ -1,31 +1,26 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include<glm/glm.hpp>
-#include "Model.h"
 #include "AABB.h"
+#include "Model.h"
+#include <glm/glm.hpp>
 
-class PlayerObj{
+class PlayerObj {
 
 public:
-	
-	PlayerObj();
+  PlayerObj();
+  PlayerObj(const glm::vec3 &pos);
 
-	static ModelLoader::Model m_PlayerModel;
+  static ModelLoader::Model m_PlayerModel;
 
 protected:
+  glm::vec3 m_Position;
+  glm::vec3 m_Orientation;
 
-	glm::vec3 m_Position;
-	glm::vec3 m_Orientation;
+  // might remove since bounding box is based off of player width and height
+  AABB m_Collider;
 
-	// might remove since bounding box is based off of player width and height	
-	AABB m_Collider;
-
-	float m_Rotation;
-
+  float m_Rotation;
 };
-
-
-
 
 #endif

@@ -10,7 +10,7 @@ class VBO
 {
 private:
 	GLuint m_ID;
-public:	
+public:
 
 
 	template <typename T>

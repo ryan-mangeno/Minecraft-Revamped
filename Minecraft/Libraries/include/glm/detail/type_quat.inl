@@ -161,7 +161,7 @@ namespace detail
 		return qua<T, Q>(w, x, y, z);
 #	endif
 	}
-	
+
 	// -- Conversion constructors --
 
 	template<typename T, qualifier Q>
@@ -421,4 +421,3 @@ namespace detail
 #if GLM_CONFIG_SIMD == GLM_ENABLE
 #	include "type_quat_simd.inl"
 #endif
-

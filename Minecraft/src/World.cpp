@@ -5,7 +5,7 @@
 
 
 
-World::World() : m_ThreadPool(4), m_RenderHeight(1), 
+World::World() : m_ThreadPool(4), m_RenderHeight(1),
 m_ChunksLoading(0), m_NumChunks(0), m_NumChunksRendered(0), m_PrevCamX(0), m_PrevCamY(20), m_PrevCamZ(0)
 {
 }
@@ -33,7 +33,7 @@ void World::Update(glm::vec3 camPos, Shader* shader)
 
 		// chunk we are at
 		/*
-		
+
 		we want to prioritize the chunk we are at currently as soon as we can in a queue
 		if we dont and we rapidly move to a new area we would be generating chunks possibly out of render distance
 
@@ -55,14 +55,14 @@ void World::Update(glm::vec3 camPos, Shader* shader)
 		// ... where max(|x|, |z|) == step, and enqueue symmetric chunk positions across Y
 		// this replaces manual handling of cardinal directions, corners, and edges I had previously
 
-		for (int step = 0; step < m_RenderDistance; ++step) 
+		for (int step = 0; step < m_RenderDistance; ++step)
 		{
-			for (int x = -step; x <= step; ++x) 
+			for (int x = -step; x <= step; ++x)
 			{
-				for (int z = -step; z <= step; ++z) 
+				for (int z = -step; z <= step; ++z)
 				{
 					// skiping inner cube faces, we only want the shell
-					if (std::max(std::abs(x), std::abs(z)) == step) 
+					if (std::max(std::abs(x), std::abs(z)) == step)
 					{
 						for (int y = 0; y <= m_RenderHeight; ++y)
 						{
@@ -181,6 +181,5 @@ void World::MarkNeighbors(int lx, int ly, int lz, int cx, int cy, int cz)
 	markChunk(dirs);
 
 
-	
-}
 
+}

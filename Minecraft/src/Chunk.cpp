@@ -27,7 +27,7 @@ Chunk::Chunk(unsigned int chunkSize, glm::vec3 chunkPos, Thread::ThreadPool& tp)
 
 	// when we generate chunk we should default it to not render since it must be generated in chunk first
 	m_Render = false;
- 
+
 
 	tp.enqueueTask(std::bind(&Chunk::GenerateChunk, this));
 
@@ -331,7 +331,7 @@ void Chunk::GenerateChunk()
 
 
 	uvec northChunk, southChunk, eastChunk, westChunk, upChunk, downChunk;
-	
+
 
 	std::vector<ChunkOffset> neighbors =
 	{
@@ -381,11 +381,11 @@ void Chunk::GenerateChunk()
 
 
 					/*
-					
+
 					if we are at the far north end of the chunk, the north face will depend on whether or not
 					the block in the next chunk to the north is solid or not
 					the same idea will apply to other blocks that we check in this function
-					
+
 					when we check the southern block face, if the current z component is at CHUNK_SIZE
 					it will depend on the block in the chunk south of the current chunk
 
@@ -574,7 +574,7 @@ void Chunk::GenerateChunk()
 
 
 
-void Chunk::OnUpdate() 
+void Chunk::OnUpdate()
 {
 	if (!m_Ready)
 	{
@@ -599,7 +599,7 @@ void Chunk::OnUpdate()
 
 			glGenBuffers(1, &m_EBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Indices.size() * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW); 
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_Indices.size() * sizeof(unsigned int), nullptr, GL_DYNAMIC_DRAW);
 			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, m_Indices.size() * sizeof(unsigned int), m_Indices.data());
 
 			glBindVertexArray(0);

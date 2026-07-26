@@ -11,7 +11,7 @@ public:
 		m_DeltaTime(0)
 	{
 	}
-	
+
 	static AppAttribs& GetAppAttribs() {
 		static AppAttribs aa(WIDTH, HEIGHT);
 		return aa;

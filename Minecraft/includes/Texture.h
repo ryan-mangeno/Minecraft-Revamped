@@ -34,8 +34,8 @@ private:
 	static std::array<Texture, 4> m_Textures;
 
 	Texture(const std::string& path, int);
-	
-	
+
+
 
 public:
 

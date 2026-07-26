@@ -8,7 +8,7 @@
 const float GRAVITY = -9.81f * 2;
 const float TERMINAL_VELOCITY = -50.0f;
 
-//general up direction for projection stuff 
+//general up direction for projection stuff
 constexpr glm::vec3 g_Up(0.f, 1.f, 0.f);
 
 
@@ -50,11 +50,11 @@ void Camera::DispatchKeyboardEvent(MovementDir dir, float deltaTime)
         case UP:           m_Position += g_Up * velocity; m_Velocity = 5.0f; break;
         case DOWN:         m_Position +=          -g_Up * velocity; break;
         case NONE:                                                  break;
-        
+
         default:                                                    break;
 
     }
-	
+
 
 }
 
@@ -65,11 +65,11 @@ void Camera::OnUpdate(float deltaTime)
 	float chunkY = static_cast<float>(std::floor(m_Position.y));
 	float chunkZ = static_cast<float>(std::floor(m_Position.z));
 
-    
+
    m_Velocity += GRAVITY * deltaTime;
    if (m_Velocity < TERMINAL_VELOCITY) m_Velocity = TERMINAL_VELOCITY;
    m_Position.y += m_Velocity * deltaTime;
-   
+
     // blocks will now be all the blocks , x,y,z , "near" the player with some dx, dy, and dz
 
     std::vector<glm::vec3> blocks = BroadPhase(glm::floor(m_Position - 2.0f), glm::ceil(m_Position + 4.0f));
@@ -120,7 +120,7 @@ void Camera::DispatchMouseMoveEvent(float xrot, float yrot)
     if (!(m_Pitch >= -85.0f && m_Pitch <= 85.0f)) {
         m_Pitch -= yrot;
     }
-       
+
 
    // std::cout << "Yaw: " << m_Yaw << "\tPitch: " << m_Pitch << "\n";
 
@@ -131,7 +131,7 @@ void Camera::DispatchMouseMoveEvent(float xrot, float yrot)
 void Camera::DispatchMouseScrollEvent(float scroll)
 {
     m_Speed += scroll;
-    
+
     // if we go too low
     m_Speed = (m_Speed < 0) ? 0 : m_Speed;
 }
@@ -151,7 +151,7 @@ void Camera::updateCameraVectors()
     m_Orientation.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
 
     m_Orientation = glm::normalize(m_Orientation);
-    
+
     // ori changed to we need to recalc up and right
     m_Right = glm::normalize(glm::cross(m_Orientation, g_Up));
     m_Up = glm::normalize(glm::cross(m_Right, m_Orientation));

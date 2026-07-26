@@ -46,7 +46,7 @@ class Shader
 
 		GLint getUniform(const std::string& uni_name);
 		static Shader* getShader(const std::string& shader_name);
-			
+
 		void Bind() const;
 		void Unbind() const;
 		void compileErrors(unsigned int shader, const char* type);

@@ -78,7 +78,7 @@ bool Ray::Cast(const glm::vec3& direction, float maxDist)
         {
 			chunk->SetBlock(index, Blocks::AIR); // remove the block
 			chunk->SetDirty(true); // mark the chunk as dirty
-			world.MarkNeighbors(lx, ly, lz, cx, cy, cz); 
+			world.MarkNeighbors(lx, ly, lz, cx, cy, cz);
 
             std::cout << "hit" << block.pos.x << " " << block.pos.y << " " << block.pos.z << std::endl;
             return true;

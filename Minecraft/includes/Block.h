@@ -13,7 +13,7 @@ public:
 
 	Block(uchar minX, uchar minY, uchar maxX, uchar maxY, uchar spriteSize);
 
-	Block(uchar topMinX, uchar topMinY, uchar topMaxX, uchar topMaxY, 
+	Block(uchar topMinX, uchar topMinY, uchar topMaxX, uchar topMaxY,
 		uchar bottomMinX, uchar bottomMinY, uchar bottomMaxX, uchar bottomMaxY,
 		uchar sideMinX, uchar sideMinY, uchar sideMaxX, uchar sideMaxY);
 

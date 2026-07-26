@@ -449,4 +449,3 @@ namespace detail
 #if GLM_COMPILER & GLM_COMPILER_CLANG
 #	pragma clang diagnostic pop
 #endif
-

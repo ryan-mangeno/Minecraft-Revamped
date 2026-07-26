@@ -32,4 +32,3 @@ void VAO::Unbind() const
 {
 	glBindVertexArray(0);
 }
-

@@ -24,4 +24,3 @@ void Renderer::Draw(const VAO& va, Shader& shader, GLuint numIndices)
 	GlCall(glDrawElements(GL_TRIANGLES, numIndices, GL_UNSIGNED_INT, 0));
 
 }
-

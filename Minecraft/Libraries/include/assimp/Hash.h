@@ -76,7 +76,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 inline uint32_t SuperFastHash (const char * data, uint32_t len = 0, uint32_t hash = 0) {
     uint32_t tmp;
     int rem;
-    
+
     if (!data) return 0;
     if (!len)len = (uint32_t)::strlen(data);
 

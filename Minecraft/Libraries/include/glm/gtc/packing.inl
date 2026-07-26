@@ -948,4 +948,3 @@ namespace detail
 		return Unpack;
 	}
 }//namespace glm
-

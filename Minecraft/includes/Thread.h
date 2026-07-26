@@ -20,7 +20,7 @@ namespace Thread {
 	public:
 		ThreadPool(size_t numThreads);
 		~ThreadPool();
-		
+
 		void stop();
 		void enqueueTask(Task);
 
@@ -40,4 +40,4 @@ namespace Thread {
 
 }
 
-#endif // 
+#endif //

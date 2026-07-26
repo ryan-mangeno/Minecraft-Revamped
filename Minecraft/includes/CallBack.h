@@ -12,4 +12,3 @@ public:
 };
 
 void processInput(GLFWwindow* window);
-

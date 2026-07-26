@@ -55,13 +55,13 @@ void Minecraft::Run()
 		appAttribs.SetDeltaTime(curTime - prevTime);
 		prevTime = curTime;
 
-		
+
 		processInput(window);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		gui.HandleGui();
-		
+
 		glm::mat4 view = camera.CalcViewMatrix();
 
 		main_shader->SetUniformMat4f("view", view);

@@ -11,7 +11,7 @@
 using uvec = std::vector<unsigned int>;
 
 
-struct ChunkPosition 
+struct ChunkPosition
 {
 	int x, y, z;
 

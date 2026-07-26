@@ -128,4 +128,3 @@ inline Subdivider::~Subdivider() = default;
 
 
 #endif // !!  AI_SUBDISIVION_H_INC
-

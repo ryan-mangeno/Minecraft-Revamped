@@ -41,4 +41,3 @@ namespace glm
 }// namespace glm
 
 #include "texture.inl"
-

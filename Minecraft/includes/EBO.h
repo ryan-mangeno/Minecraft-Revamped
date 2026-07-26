@@ -37,7 +37,7 @@ public:
 	void Unbind() const;
 
 	inline GLuint GetID() { return m_ID; };
-	
+
 };
 
 #endif

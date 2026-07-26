@@ -13,7 +13,7 @@ namespace Blocks
 	enum BLOCKS : unsigned int
 	{
 		AIR = 0,
-		DIRT, 
+		DIRT,
 		GRASS,
 		STONE,
 		SAND,

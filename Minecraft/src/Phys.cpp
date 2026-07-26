@@ -22,7 +22,7 @@ std::vector<glm::vec3> BroadPhase(const glm::vec3& minPos, const glm::vec3& maxP
                             int chunkZ = std::floor(z / 16);
 
                             uvec& chunkData = world.GetChunkData(chunkX, chunkY, chunkZ);
-                                    
+
                             if( chunkData.size() == CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE )
                             {
                                 int xIdx = x - chunkX * 16;
@@ -74,7 +74,7 @@ std::vector<ColliderResult> NarrowPhase(const std::vector<glm::vec3>& blocks, gl
 
         bool is_above = false;
 
-        float dx = closestPoint.x - playerPosition.x;    
+        float dx = closestPoint.x - playerPosition.x;
 
         float dy = closestPoint.y - playerPosition.y;
         if (playerPosition.y > block.y + 1.0f)
@@ -86,14 +86,14 @@ std::vector<ColliderResult> NarrowPhase(const std::vector<glm::vec3>& blocks, gl
         float dz = closestPoint.z - playerPosition.z;
         float r_sq = dx * dx + dz * dz;
 
-        
-        
+
+
 
         bool collision = playerCollider.collides(closestPoint.x, closestPoint.y , closestPoint.z);
 
         if (collision)
         {
-            
+
             float overlapY = height / 2.f - dy;
 
             if (is_above)

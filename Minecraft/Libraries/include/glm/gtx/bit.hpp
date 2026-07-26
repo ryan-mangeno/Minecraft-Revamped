@@ -93,4 +93,3 @@ namespace glm
 
 
 #include "bit.inl"
-

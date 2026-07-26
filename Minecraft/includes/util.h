@@ -56,4 +56,4 @@ constexpr int HEIGHT = 720;
 constexpr float PLAYER_WIDTH = 0.6f;
 constexpr float PLAYER_HEIGHT = 1.8f;
 
-#endif 
+#endif
