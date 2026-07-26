@@ -2,48 +2,47 @@
 #define DEBUG_H
 
 #include <GLFW/glfw3.h>
-#include <iostream>
-#include <stdio.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
+#include <stdio.h>
 
+#ifdef _WIN32
+#define ASSERT(x)                                                              \
+  if (!(x))                                                                    \
+    __debugbreak();
+#else
+#include <cstdlib>
+#define ASSERT(x)                                                              \
+  if (!(x))                                                                    \
+    std::abort();
+#endif
 
-#define ASSERT(x) if (!(x)) __debugbreak();
-
-#define GlCall(x) ClearGl();\
-				  x;\
-				  ASSERT(GetError(#x, __FILE__, __LINE__ ));
-
-
+#define GlCall(x)                                                              \
+  ClearGl();                                                                   \
+  x;                                                                           \
+  ASSERT(GetError(#x, __FILE__, __LINE__));
 
 void ClearGl();
 
-bool GetError(const char* function, const char* file, int line);
+bool GetError(const char *function, const char *file, int line);
 
-
-class Gui
-{
+class Gui {
 public:
-
-	Gui(GLFWwindow*);
-	~Gui();
-	void HandleGui();
-
+  Gui(GLFWwindow *);
+  ~Gui();
+  void HandleGui();
 
 private:
+  GLFWwindow *m_Window;
+  ImGuiIO *m_Io;
 
-	GLFWwindow* m_Window;
-	ImGuiIO* m_Io;
-	
-	bool m_show_demo_window = true;
-	bool m_show_another_window = false;
-	const ImVec4 m_clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
-
-
+  bool m_show_demo_window = true;
+  bool m_show_another_window = false;
+  const ImVec4 m_clear_color = ImVec4(0.0f, 0.0f, 0.0f, 1.00f);
 };
-
 
 #endif

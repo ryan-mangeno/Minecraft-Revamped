@@ -17,5 +17,5 @@ class Self : public PlayerObj
 		
 		// camera is singleton ... might change
 		//Camera m_Camera;
-}
+};
 
