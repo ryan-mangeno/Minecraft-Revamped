@@ -1,7 +1,7 @@
 #include "Shader.h"
+#include "util.h"
+
 #include <glm/gtc/type_ptr.hpp> // for value_ptr
-
-
 #include <glad/glad.h>
 
 
@@ -19,6 +19,11 @@ Shader::Shader(const std::string& filepath) : m_UniformLocationCache()
 	const char* vertexSource = shaderCode.VertexSource.c_str();
 	const char* fragmentSource = shaderCode.FragmentSource.c_str();
 
+	std::cout << "VERTEX SHADER: \n";
+	std::cout << vertexSource << "\n";
+
+	std::cout << "FRAGMENT SHADER: \n";
+	std::cout << fragmentSource << "\n";
 
 	// Create Vertex Shader Object and get its reference
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -42,9 +47,10 @@ Shader::Shader(const std::string& filepath) : m_UniformLocationCache()
 	// Attach the Vertex and Fragment Shaders to the Shader Program
 	glAttachShader(m_ID, vertexShader);
 	glAttachShader(m_ID, fragmentShader);
-	compileErrors(vertexShader, "PROGRAM");
 
 	glLinkProgram(m_ID);
+	compileErrors(m_ID, "PROGRAM");
+
 	glValidateProgram(m_ID);
 
 
@@ -57,53 +63,49 @@ Shader::Shader(const std::string& filepath) : m_UniformLocationCache()
 // Reads a text file and outputs a string with everything in the text file
 ShaderProgramSource get_file_contents(const std::string& filename)
 {
-	std::ifstream in(filename.c_str(), std::ios::binary);
+    std::ifstream in(filename);
 
+    if (!in.is_open())
+    {
+        throw std::runtime_error("Failed to open shader file: " + filename);
+    }
 
-	enum class ShaderType
-	{
-		NONE = -1, VERTEX = 0, FRAGMENT = 1
-	};
+    enum class ShaderType
+    {
+        NONE = -1,
+        VERTEX = 0,
+        FRAGMENT = 1
+    };
 
-	// 1 for vert and 1 for frag
-	std::stringstream ss[2];
+    std::stringstream ss[2];
 
-	ShaderType type = ShaderType::NONE;
+    ShaderType type = ShaderType::NONE;
 
+    std::string line;
 
-	if (1)
-	{
+    while (getline(in, line))
+    {
+        if (line.find("#shader") != std::string::npos)
+        {
+            if (line.find("vertex") != std::string::npos)
+            {
+                type = ShaderType::VERTEX;
+            }
+            else if (line.find("fragment") != std::string::npos)
+            {
+                type = ShaderType::FRAGMENT;
+            }
+        }
+        else if (type != ShaderType::NONE)
+        {
+            ss[(int)type] << line << '\n';
+        }
+    }
 
-
-		std::string line;
-
-
-		while (getline(in, line))
-		{
-
-			if (line.find("#shader") != std::string::npos)
-			{
-				if (line.find("vertex") != std::string::npos)
-				{
-
-					type = ShaderType::VERTEX;
-				}
-				else if (line.find("fragment") != std::string::npos)
-				{
-
-					type = ShaderType::FRAGMENT;
-
-				}
-			}
-
-			else {
-				ss[(int)type] << line << "\n";
-			}
-		}
-
-		return { ss[0].str() , ss[1].str() };
-	}
-	throw(errno);
+    return {
+        ss[(int)ShaderType::VERTEX].str(),
+        ss[(int)ShaderType::FRAGMENT].str()
+    };
 }
 
 
@@ -122,23 +124,22 @@ void Shader::SetUniform3fs(const std::string& uni_name, const glm::vec3 vector[6
 
 void Shader::InitShaders()
 {
+    auto resourcePath = getExecutablePath() / "Resources/shaders/shader.glsl";
 
-	Shader* main_shader = new Shader("Resources/shaders/shader.glsl");
+    Shader* main_shader = new Shader(resourcePath.string());
 
-	m_ShaderLocationCache["main_shader"] = main_shader;
+    m_ShaderLocationCache["main_shader"] = main_shader;
 
-	// binding texture0 for worldatlas in main shader
-	main_shader->Bind();
-	main_shader->SetUniform1f("texMultiplier", 0.5f);
-	main_shader->SetUniform1f("tex", 0);
+    main_shader->Bind();
 
-	main_shader->Unbind();
+    main_shader->SetUniform1f("texMultiplier", 0.5f);
+    main_shader->SetUniform1i("tex", 0);
+
+    main_shader->Unbind();
 
 	// not yet
 	//Shader* modelShader = new Shader("resources/model.shader");
 	//m_ShaderLocationCache["model.shader"] = modelShader;
-
-
 }
 
 
@@ -224,7 +225,7 @@ void Shader::compileErrors(unsigned int shader, const char* type)
 	GLint hasCompiled;
 	// Character array to store error message in
 	char infoLog[1024];
-	if (type != "PROGRAM")
+	if (std::string(type) != "PROGRAM")
 	{
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
 		if (hasCompiled == GL_FALSE)

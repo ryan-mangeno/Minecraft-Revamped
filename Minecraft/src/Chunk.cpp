@@ -3,6 +3,7 @@
 #include "Blocks.h"
 #include "util.h"
 #include "Debug.h"
+#include "Texture.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -631,20 +632,32 @@ void Chunk::OnUpdate()
 	}
 }
 
+
 void Chunk::Render(Shader* shader)
 {
-	if (m_Render && m_Ready)
-	{
-		GlCall(glBindVertexArray(m_VAO));
+    if (m_Render && m_Ready)
+    {
+        shader->Bind();
 
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, m_WorldPos);
-		shader->SetUniformMat4f("model", model);
+        Texture::GetTexture(0).Bind(0);
+        shader->SetUniform1i("tex", 0);
 
-		glDrawElements(GL_TRIANGLES, m_NumTriangles, GL_UNSIGNED_INT, 0);
-	}
+        glBindVertexArray(m_VAO);
 
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, m_WorldPos);
 
+        shader->SetUniformMat4f("model", model);
+
+        glDrawElements(
+            GL_TRIANGLES,
+            m_NumTriangles,
+            GL_UNSIGNED_INT,
+            0
+        );
+
+        glBindVertexArray(0);
+    }
 }
 
 

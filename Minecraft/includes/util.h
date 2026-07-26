@@ -5,6 +5,7 @@
 #include "Block.h"
 #include <glm/glm.hpp>
 #include <array>
+#include <filesystem>>
 
 
 struct Vertex
@@ -55,5 +56,8 @@ constexpr int HEIGHT = 720;
 
 constexpr float PLAYER_WIDTH = 0.6f;
 constexpr float PLAYER_HEIGHT = 1.8f;
+
+
+std::filesystem::path getExecutablePath();
 
 #endif
