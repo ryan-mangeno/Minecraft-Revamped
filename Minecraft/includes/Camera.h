@@ -44,6 +44,9 @@ private:
 
   // camera attribs
   glm::vec3 m_Position;
+  glm::vec3 m_PositionUpdate;
+  glm::vec3 m_PrevPosition;
+
   glm::vec3 m_Orientation;
   glm::vec3 m_Right;
   glm::vec3 m_Up;

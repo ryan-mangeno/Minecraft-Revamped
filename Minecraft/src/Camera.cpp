@@ -16,6 +16,8 @@ Camera::Camera(glm::vec3 position, int width, int height, float fov, float nearP
     : m_Width(width),
     m_Height(height),
     m_Position(position),
+    m_PositionUpdate(position),
+    m_PrevPosition(position),
     m_MVP(glm::mat4(1.0f)),
     m_Orientation(0.0f, 0.0f, -1.0f),
     m_Up(glm::vec3(0.0f, 1.0f, 0.0f)),
@@ -43,12 +45,12 @@ void Camera::DispatchKeyboardEvent(MovementDir dir, float deltaTime)
     glm::vec3 backward = glm::cross(m_Right, g_Up);
 
     switch (dir) {
-        case FORWARD:      m_Position += -backward * velocity; break;
-        case BACK:         m_Position +=  backward * velocity; break;
-        case LEFT:         m_Position +=       -m_Right * velocity; break;
-        case RIGHT:        m_Position +=        m_Right * velocity; break;
-        case UP:           m_Position += g_Up * velocity; m_Velocity = 5.0f; break;
-        case DOWN:         m_Position +=          -g_Up * velocity; break;
+        case FORWARD:      m_PositionUpdate += -backward * velocity; break;
+        case BACK:         m_PositionUpdate +=  backward * velocity; break;
+        case LEFT:         m_PositionUpdate +=       -m_Right * velocity; break;
+        case RIGHT:        m_PositionUpdate +=        m_Right * velocity; break;
+        case UP:           m_PositionUpdate += g_Up * velocity; m_Velocity = 5.0f; break;
+        case DOWN:         m_PositionUpdate +=          -g_Up * velocity; break;
         case NONE:                                                  break;
 
         default:                                                    break;
@@ -68,15 +70,15 @@ void Camera::OnUpdate(float deltaTime)
 
    m_Velocity += GRAVITY * deltaTime;
    if (m_Velocity < TERMINAL_VELOCITY) m_Velocity = TERMINAL_VELOCITY;
-   m_Position.y += m_Velocity * deltaTime;
+   m_PositionUpdate.y += m_Velocity * deltaTime;
 
     // blocks will now be all the blocks , x,y,z , "near" the player with some dx, dy, and dz
 
-    std::vector<glm::vec3> blocks = BroadPhase(glm::floor(m_Position - 2.0f), glm::ceil(m_Position + 4.0f));
+    std::vector<glm::vec3> blocks = BroadPhase(glm::floor(m_PositionUpdate - 2.0f), glm::ceil(m_PositionUpdate + 4.0f));
 
-    glm::vec3 minBoxPos{ m_Position.x - PLAYER_WIDTH / 2.f, m_Position.y - PLAYER_HEIGHT, m_Position.z - PLAYER_WIDTH / 2.0f };
+    glm::vec3 minBoxPos{ m_PositionUpdate.x - PLAYER_WIDTH / 2.f, m_PositionUpdate.y - PLAYER_HEIGHT, m_PositionUpdate.z - PLAYER_WIDTH / 2.0f };
     AABB box(minBoxPos, PLAYER_WIDTH, PLAYER_HEIGHT);
-    std::vector<ColliderResult> hitBlocks = NarrowPhase(blocks, m_Position, box);
+    std::vector<ColliderResult> hitBlocks = NarrowPhase(blocks, m_PositionUpdate, box);
 
     glm::vec3 totalCorrectionY(0.0f);
     glm::vec3 totalCorrectionXZ(0.0f);
@@ -97,10 +99,11 @@ void Camera::OnUpdate(float deltaTime)
     }
 
     // Apply total corrections to position
-    m_Position += totalCorrectionY * deltaTime;
+    m_PositionUpdate += totalCorrectionY * deltaTime;
     //m_Position += totalCorrectionXZ * deltaTime;
 
-
+    m_PrevPosition = m_Position;
+    m_Position = m_PositionUpdate;
 }
 
 // @param xrot -  x offset/rot from different between cur mouse x and prev mouse x
