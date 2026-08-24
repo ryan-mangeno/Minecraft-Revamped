@@ -68,6 +68,7 @@ target_include_directories(Minecraft
 PRIVATE
     Minecraft/includes
     Minecraft/vendor
+    Minecraft/vendor/spdlog/include
     Minecraft/Libraries/include
 )
 

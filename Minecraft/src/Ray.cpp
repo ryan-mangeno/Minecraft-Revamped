@@ -1,6 +1,5 @@
 #include "Ray.h"
 #include "Blocks.h"
-#include "Ray.h"
 #include "World.h"
 #include "constants.h"
 
@@ -17,15 +16,20 @@ static bool RayAABBIntersect(const glm::vec3 &rayOrigin,
   glm::vec3 t0 = (aabbMin - rayOrigin) * invDir;
   glm::vec3 t1 = (aabbMax - rayOrigin) * invDir;
 
-  glm::vec3 tminVec = glm::min(t0, t1);
-  glm::vec3 tmaxVec = glm::max(t0, t1);
-
   tmin = std::max(std::max(std::min(t0.x, t1.x), std::min(t0.y, t1.y)),
                   std::min(t0.z, t1.z));
   tmax = std::min(std::min(std::max(t0.x, t1.x), std::max(t0.y, t1.y)),
                   std::max(t0.z, t1.z));
 
   return tmax >= tmin && tmax >= 0.0f;
+}
+
+// floor-division for chunk coords - plain '/' truncates toward zero and
+// puts negative-space blocks in the wrong chunk (e.g. -1 / 16 == 0, but
+// block -1 belongs to chunk -1). Matches the std::floor(x/16) BroadPhase
+// already uses in Phys.cpp.
+static inline int FloorDiv(int a, int b) {
+  return (a >= 0) ? (a / b) : -(((-a) + b - 1) / b);
 }
 
 // for now ray casting will just return wether it hits a block or not
@@ -61,34 +65,42 @@ bool Ray::Cast(const glm::vec3 &direction, float maxDist) {
       break;
 
     // Check the block
-    int cx = block.pos.x / CHUNK_SIZE;
-    int cy = block.pos.y / CHUNK_SIZE;
-    int cz = block.pos.z / CHUNK_SIZE;
+    int cx = FloorDiv(block.pos.x, CHUNK_SIZE);
+    int cy = FloorDiv(block.pos.y, CHUNK_SIZE);
+    int cz = FloorDiv(block.pos.z, CHUNK_SIZE);
 
     uvec &chunkData = world.GetChunkData(cx, cy, cz);
     Chunk *chunk = world.GetChunk(cx, cy, cz);
 
-    int lx = block.pos.x % CHUNK_SIZE;
-    int ly = block.pos.y % CHUNK_SIZE;
-    int lz = block.pos.z % CHUNK_SIZE;
+    // skip unloaded/ungenerated chunks instead of throwing (.at()) or
+    // null-dereferencing chunk->SetBlock below - still fall through to
+    // neighbor expansion so the ray keeps traveling past this gap
+    bool chunkReady = chunk != nullptr &&
+                       chunkData.size() == CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
 
-    if (lx < 0)
-      lx += CHUNK_SIZE;
-    if (ly < 0)
-      ly += CHUNK_SIZE;
-    if (lz < 0)
-      lz += CHUNK_SIZE;
+    if (chunkReady) {
+      int lx = block.pos.x % CHUNK_SIZE;
+      int ly = block.pos.y % CHUNK_SIZE;
+      int lz = block.pos.z % CHUNK_SIZE;
 
-    int index = lx * CHUNK_SIZE * CHUNK_SIZE + lz * CHUNK_SIZE + ly;
+      if (lx < 0)
+        lx += CHUNK_SIZE;
+      if (ly < 0)
+        ly += CHUNK_SIZE;
+      if (lz < 0)
+        lz += CHUNK_SIZE;
 
-    if (chunkData.at(index) != Blocks::AIR) {
-      chunk->SetBlock(index, Blocks::AIR); // remove the block
-      chunk->SetDirty(true);               // mark the chunk as dirty
-      world.MarkNeighbors(lx, ly, lz, cx, cy, cz);
+      int index = lx * CHUNK_SIZE * CHUNK_SIZE + lz * CHUNK_SIZE + ly;
 
-      std::cout << "hit" << block.pos.x << " " << block.pos.y << " "
-                << block.pos.z << std::endl;
-      return true;
+      if (chunkData[index] != Blocks::AIR) {
+        chunk->SetBlock(index, Blocks::AIR); // remove the block
+        chunk->SetDirty(true);               // mark the chunk as dirty
+        world.MarkNeighbors(lx, ly, lz, cx, cy, cz);
+
+        std::cout << "hit" << block.pos.x << " " << block.pos.y << " "
+                  << block.pos.z << std::endl;
+        return true;
+      }
     }
 
     // Add neighbors in axis order (1-axis first, then 2-axis moves, etc.)

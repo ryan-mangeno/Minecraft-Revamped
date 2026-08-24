@@ -8,28 +8,21 @@ AABB::AABB(const glm::vec3& ColliderMinCornerPos, float width, float height)
 {
 }
 
-
 bool AABB::collides(const glm::vec3& point) const
 {
 	if(point.x >= minX && point.x <= maxX &&
 	   point.y >= minY && point.y <= maxY &&
-    	   point.z >= minZ && point.z <= maxZ
-	  )
-     	{
-		// collides
+       point.z >= minZ && point.z <= maxZ) {
 		return true;
-		}
+	}
 
-	// doesnt collide return false
 	return false;
-
 }
 
 bool AABB::collides(float x, float y, float z) const
 {
 	return collides(glm::vec3(x,y,z));
 }
-
 
 // assumes aabb's dont rotate .. this is fine for this clone since I will not be dealing with
 // swimming ( yet ... we will see )

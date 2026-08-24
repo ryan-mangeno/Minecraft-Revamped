@@ -1,0 +1,3 @@
+[submodule "Minecraft/vendor/spdlog"]
+	path = Minecraft/vendor/spdlog
+	url = https://github.com/gabime/spdlog/

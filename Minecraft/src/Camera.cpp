@@ -3,12 +3,11 @@
 #include "Phys.h"
 
 
-
-                    //amplifying gravity * 2
+// amplifying gravity * 2
 const float GRAVITY = -9.81f * 2;
 const float TERMINAL_VELOCITY = -50.0f;
 
-//general up direction for projection stuff
+// general up direction for projection stuff
 constexpr glm::vec3 g_Up(0.f, 1.f, 0.f);
 
 
@@ -28,7 +27,8 @@ Camera::Camera(glm::vec3 position, int width, int height, float fov, float nearP
 	m_Speed(5.0f),
 	m_Velocity(5.0f),
     m_Sensitivity(0.5f)
-{                                       // can do fov or zoom for this
+{
+    // can do fov or zoom for this
     m_ProjectionMat = glm::perspective(glm::radians(m_Zoom), float(m_Width) / float(m_Height), nearPlane, farPlane);
     updateCameraVectors();
 }
@@ -54,53 +54,63 @@ void Camera::DispatchKeyboardEvent(MovementDir dir, float deltaTime)
         case NONE:                                                  break;
 
         default:                                                    break;
-
     }
-
-
 }
 
 // for gravity sim
 void Camera::OnUpdate(float deltaTime)
 {
-	float chunkX = static_cast<float>(std::floor(m_Position.x));
-	float chunkY = static_cast<float>(std::floor(m_Position.y));
-	float chunkZ = static_cast<float>(std::floor(m_Position.z));
+    // resolve xz first at current height, then y after gravity
+    // a pure side hit can't leak into a vertical push this way
 
+    // narrowphase now does a real box vs box overlap test itself and
+    // only returns actual collisions, so no gate check is needed here
+    auto queryHits = [this]() -> std::vector<ColliderResult> {
+        std::vector<glm::vec3> blocks = BroadPhase(glm::floor(m_PositionUpdate - 2.0f), glm::ceil(m_PositionUpdate + 4.0f));
+        glm::vec3 minBoxPos{ m_PositionUpdate.x - PLAYER_WIDTH / 2.f, m_PositionUpdate.y - PLAYER_HEIGHT, m_PositionUpdate.z - PLAYER_WIDTH / 2.0f };
+        AABB box(minBoxPos, PLAYER_WIDTH, PLAYER_HEIGHT);
+        return NarrowPhase(blocks, m_PositionUpdate, box);
+    };
 
-   m_Velocity += GRAVITY * deltaTime;
-   if (m_Velocity < TERMINAL_VELOCITY) m_Velocity = TERMINAL_VELOCITY;
-   m_PositionUpdate.y += m_Velocity * deltaTime;
-
-    // blocks will now be all the blocks , x,y,z , "near" the player with some dx, dy, and dz
-
-    std::vector<glm::vec3> blocks = BroadPhase(glm::floor(m_PositionUpdate - 2.0f), glm::ceil(m_PositionUpdate + 4.0f));
-
-    glm::vec3 minBoxPos{ m_PositionUpdate.x - PLAYER_WIDTH / 2.f, m_PositionUpdate.y - PLAYER_HEIGHT, m_PositionUpdate.z - PLAYER_WIDTH / 2.0f };
-    AABB box(minBoxPos, PLAYER_WIDTH, PLAYER_HEIGHT);
-    std::vector<ColliderResult> hitBlocks = NarrowPhase(blocks, m_PositionUpdate, box);
-
-    glm::vec3 totalCorrectionY(0.0f);
-    glm::vec3 totalCorrectionXZ(0.0f);
-
-    for (const auto& it : hitBlocks) {
-        if (!box.collides(it.contactPoint))
-            continue;
-
-        if (it.overlapY != 0.0f) {
-            totalCorrectionY = it.normal * it.overlapY;
-            m_Velocity = 0.0f;
+    // horizontal pass
+    {
+        auto hitBlocks = queryHits();
+        glm::vec3 totalCorrectionXZ(0.0f);
+        for (const auto& it : hitBlocks) {
+            // keep the biggest correction instead of overwriting
+            if (it.overlapXZ != 0.0f) {
+                glm::vec3 c = it.normal * it.overlapXZ;
+                if (glm::length(c) > glm::length(totalCorrectionXZ))
+                    totalCorrectionXZ = c;
+            }
         }
-
-        if (it.overlapXZ != 0.0f)
-            totalCorrectionXZ = it.normal * it.overlapXZ;
-
-
+        if (totalCorrectionXZ.x || totalCorrectionXZ.z) {
+            std::cout << "XZ Collision! x: " << totalCorrectionXZ.x << " z: " << totalCorrectionXZ.z << '\n';
+        }
+        m_PositionUpdate += totalCorrectionXZ;
     }
 
-    // Apply total corrections to position
-    m_PositionUpdate += totalCorrectionY * deltaTime;
-    //m_Position += totalCorrectionXZ * deltaTime;
+    // vertical pass
+    m_Velocity += GRAVITY * deltaTime;
+    if (m_Velocity < TERMINAL_VELOCITY) m_Velocity = TERMINAL_VELOCITY;
+    m_PositionUpdate.y += m_Velocity * deltaTime;
+
+    {
+        auto hitBlocks = queryHits();
+
+        glm::vec3 totalCorrectionY(0.0f);
+        for (const auto& it : hitBlocks) {
+            if (it.overlapY != 0.0f) {
+                glm::vec3 c = it.normal * it.overlapY;
+                if (glm::length(c) > glm::length(totalCorrectionY))
+                    totalCorrectionY = c;
+                m_Velocity = 0.0f;
+            }
+        }
+
+        // this is a distance, not a velocity, dont scale by deltaTime
+        m_PositionUpdate += totalCorrectionY;
+    }
 
     m_PrevPosition = m_Position;
     m_Position = m_PositionUpdate;
@@ -124,10 +134,6 @@ void Camera::DispatchMouseMoveEvent(float xrot, float yrot)
         m_Pitch -= yrot;
     }
 
-
-   // std::cout << "Yaw: " << m_Yaw << "\tPitch: " << m_Pitch << "\n";
-
-
     updateCameraVectors();
 }
 
@@ -139,13 +145,13 @@ void Camera::DispatchMouseScrollEvent(float scroll)
     m_Speed = (m_Speed < 0) ? 0 : m_Speed;
 }
 
-// calculates the front vector from the Camera's (updated) Euler Angles
+// calculates the front vector from the camera's updated euler angles
 void Camera::updateCameraVectors()
 {
-    // so we can have a very high or very low yaw, wont keep cumulating, more controlled
-    glm::clamp(m_Yaw, -180.f, 180.f);
+    // clamp doesnt mutate in place, need to assign it back
+    m_Yaw = glm::clamp(m_Yaw, -180.f, 180.f);
 
-    // multiply by cos m_Pitch for dampen - when looking very high or very low, x rot slower
+    // cos m_Pitch dampens x rot when looking very high or low
     m_Orientation.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
 
     // simply sin for y component
@@ -155,7 +161,7 @@ void Camera::updateCameraVectors()
 
     m_Orientation = glm::normalize(m_Orientation);
 
-    // ori changed to we need to recalc up and right
+    // ori changed so we need to recalc up and right
     m_Right = glm::normalize(glm::cross(m_Orientation, g_Up));
     m_Up = glm::normalize(glm::cross(m_Right, m_Orientation));
 }

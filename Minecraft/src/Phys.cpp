@@ -48,57 +48,74 @@ std::vector<glm::vec3> BroadPhase(const glm::vec3 &minPos,
 std::vector<ColliderResult> NarrowPhase(const std::vector<glm::vec3> &blocks,
                                         glm::vec3 &playerPosition,
                                         const AABB &playerCollider) {
-  std::vector<ColliderResult> collisions; // todo: max collisions 4?, make
-                                          // static array and memset every time?
+  (void)playerCollider; // real overlap test below is now authoritative
 
-  constexpr float radius = PLAYER_WIDTH / 2.f;
+  std::vector<ColliderResult> collisions;
+
+  constexpr float halfWidth = PLAYER_WIDTH / 2.f;
   constexpr float height = PLAYER_HEIGHT;
-  constexpr float dampingFactor = 0.1f;
-  constexpr float ampFactor = 20.0f;
+
+  // playerPosition.y is the top of the player box, feet are position.y - height
+  const float playerMinX = playerPosition.x - halfWidth;
+  const float playerMaxX = playerPosition.x + halfWidth;
+  const float playerMinY = playerPosition.y - height;
+  const float playerMaxY = playerPosition.y;
+  const float playerMinZ = playerPosition.z - halfWidth;
+  const float playerMaxZ = playerPosition.z + halfWidth;
 
   for (const glm::vec3 &block : blocks) {
-    // block coords start at bottom left
-    glm::vec3 closestPoint = {
-        std::max(block.x, std::min(playerPosition.x, block.x + 1.0f)),
-        std::max(block.y, std::min(playerPosition.y, block.y + 1.0f)),
-        std::max(block.z, std::min(playerPosition.z, block.z + 1.0f)),
+    const float blockMinX = block.x;
+    const float blockMaxX = block.x + 1.0f;
+    const float blockMinY = block.y;
+    const float blockMaxY = block.y + 1.0f;
+    const float blockMinZ = block.z;
+    const float blockMaxZ = block.z + 1.0f;
+
+    // real box overlap on all three axes, this replaces the old
+    // circle-distance check that didnt match the square player box
+    // and caused snagging on block corners and seams
+    float overlapX = std::min(playerMaxX, blockMaxX) - std::max(playerMinX, blockMinX);
+    float overlapY = std::min(playerMaxY, blockMaxY) - std::max(playerMinY, blockMinY);
+    float overlapZ = std::min(playerMaxZ, blockMaxZ) - std::max(playerMinZ, blockMinZ);
+
+    if (overlapX <= 0.0f || overlapY <= 0.0f || overlapZ <= 0.0f)
+      continue; // not actually touching on at least one axis
+
+    glm::vec3 contactPoint = {
+        std::clamp(playerPosition.x, blockMinX, blockMaxX),
+        std::clamp(playerPosition.y, blockMinY, blockMaxY),
+        std::clamp(playerPosition.z, blockMinZ, blockMaxZ),
     };
 
-    bool is_above = false;
-
-    float dx = closestPoint.x - playerPosition.x;
-
-    float dy = closestPoint.y - playerPosition.y;
-    if (playerPosition.y > block.y + 1.0f) {
-      dy -= PLAYER_HEIGHT / 2.f;
-      is_above = true;
+    // y push, pick whichever direction is closer
+    {
+      float pushUp   = blockMaxY - playerMinY;
+      float pushDown = playerMaxY - blockMinY;
+      glm::vec3 yNorm = (pushUp < pushDown) ? glm::vec3(0.f, 1.f, 0.f)
+                                             : glm::vec3(0.f, -1.f, 0.f);
+      float correction = std::min(pushUp, pushDown);
+      collisions.emplace_back(yNorm, contactPoint, correction, 0.0f);
     }
 
-    float dz = closestPoint.z - playerPosition.z;
-    float r_sq = dx * dx + dz * dz;
-
-    bool collision =
-        playerCollider.collides(closestPoint.x, closestPoint.y, closestPoint.z);
-
-    if (collision) {
-
-      float overlapY = height / 2.f - dy;
-
-      if (is_above)
-        overlapY *=
-            dampingFactor; // applying damping to prevent continuous bouncing
-      else
-        overlapY *= ampFactor;
-
-      float overlapXZ = std::sqrt(r_sq) - radius;
-      glm::vec3 yNorm{0.f, (dy < -1.0f) - (dy > -1.0f), 0.f};
+    // xz push, use whichever of x or z has the smaller overlap
+    // this is what keeps a slide along a flat wall smooth
+    {
       glm::vec3 xzNorm(0.0f);
-      if (dx != 0.0f && dz != 0.0f)
-        xzNorm = glm::normalize(glm::vec3{-dx, 0.0f, -dz});
+      float correction = 0.0f;
 
-      // temporarily combining xz and y collisions for testing.
-      collisions.emplace_back(yNorm, closestPoint, overlapY, 0.0f);
-      collisions.emplace_back(xzNorm, closestPoint, 0.0f, overlapXZ);
+      if (overlapX < overlapZ) {
+        float pushRight = blockMaxX - playerMinX;
+        float pushLeft  = playerMaxX - blockMinX;
+        xzNorm = (pushRight < pushLeft) ? glm::vec3(1.f, 0.f, 0.f) : glm::vec3(-1.f, 0.f, 0.f);
+        correction = std::min(pushRight, pushLeft);
+      } else {
+        float pushFwd  = blockMaxZ - playerMinZ;
+        float pushBack = playerMaxZ - blockMinZ;
+        xzNorm = (pushFwd < pushBack) ? glm::vec3(0.f, 0.f, 1.f) : glm::vec3(0.f, 0.f, -1.f);
+        correction = std::min(pushFwd, pushBack);
+      }
+
+      collisions.emplace_back(xzNorm, contactPoint, 0.0f, correction);
     }
   }
 

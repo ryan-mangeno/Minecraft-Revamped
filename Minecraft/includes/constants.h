@@ -16,7 +16,7 @@ constexpr int WATER_LEVEL = 16;
 constexpr int SCREEN_WIDTH = 1280;
 constexpr int SCREEN_HEIGHT = 720;
 
-constexpr float PLAYER_WIDTH = 0.6f;
+constexpr float PLAYER_WIDTH = 0.5f;
 constexpr float PLAYER_HEIGHT = 1.8f;
 
 #endif
