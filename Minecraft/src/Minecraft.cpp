@@ -12,6 +12,7 @@
 #include "CallBack.h"
 #include "Camera.h"
 #include "Debug.h"
+#include "Log.h"
 #include "Minecraft.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -22,8 +23,10 @@ GLFWwindow *window = nullptr;
 
 void Minecraft::Run() {
 
-  if (!initGL())
-    std::cout << "init failed";
+  if (!initGL()) {
+    MC_FATAL("Initlization Failed!");
+    return;
+  }
 
   Shader::InitShaders();
   Texture::InitTextures();

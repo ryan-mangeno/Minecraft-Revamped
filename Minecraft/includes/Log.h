@@ -1,16 +1,14 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
-
-#include <utility>
 
 class Logger {
 public:
   static std::shared_ptr<spdlog::logger> &get_logger() { return s_logger; }
   static void init() {
-    s_logger = spdlog::basic_logger_mt("logger", "out_log.txt");
+    s_logger = spdlog::stdout_color_mt("logger");
     s_logger->set_level(spdlog::level::info);
   }
 

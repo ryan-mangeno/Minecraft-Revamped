@@ -97,13 +97,28 @@ PRIVATE
 if(MSVC)
     target_compile_options(Minecraft PRIVATE
         /W4
+        $<$<CONFIG:Debug>:/Od>
+        $<$<CONFIG:Release>:/O2>
     )
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(Minecraft PRIVATE
+        /MC_DEBUG
+    )
+endif()
 else()
     target_compile_options(Minecraft PRIVATE
         -Wall
         -Wextra
         -Wpedantic
+        $<$<CONFIG:Debug>:-O0>
+        $<$<CONFIG:Release>:-O3>
+
     )
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(Minecraft PRIVATE
+        -DMCDEBUG=ON
+    )
+endif()
 endif()
 
 

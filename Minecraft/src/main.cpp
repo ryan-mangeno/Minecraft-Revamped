@@ -1,10 +1,14 @@
-#include "Minecraft.h"
 #include "Log.h"
+#include "Minecraft.h"
 
 int main() {
 
-	Logger::init();
+  Logger::init();
+  MC_DEBUG("Initialized Logger");
 
-	Minecraft app;
-	app.Run();
+  MC_INFO("Starting ...");
+  Minecraft app;
+  app.Run();
+
+  MC_INFO("Shutting Down ...");
 }
