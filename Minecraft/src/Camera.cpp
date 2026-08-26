@@ -1,6 +1,6 @@
 #include "Camera.h"
-#include <iostream>
 #include "Phys.h"
+#include "Log.h"
 
 
 // amplifying gravity * 2
@@ -85,7 +85,7 @@ void Camera::OnUpdate(float deltaTime)
             }
         }
         if (totalCorrectionXZ.x || totalCorrectionXZ.z) {
-            std::cout << "XZ Collision! x: " << totalCorrectionXZ.x << " z: " << totalCorrectionXZ.z << '\n';
+            MC_DEBUG("XZ Collision! x: %f, totalCorrectionXZ.z %f", totalCorrectionXZ.x, totalCorrectionXZ.z);
         }
         m_PositionUpdate += totalCorrectionXZ;
     }

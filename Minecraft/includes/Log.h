@@ -17,7 +17,7 @@ private:
 };
 
 #define MC_FATAL(...) Logger::get_logger()->critical(__VA_ARGS__)
-#define MC_ERR(...) Logger::get_logger()->error(__VA_ARGS__)
+#define MC_ERROR(...) Logger::get_logger()->error(__VA_ARGS__)
 
 #if defined(MC_DEBUG)
 
