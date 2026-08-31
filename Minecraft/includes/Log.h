@@ -9,7 +9,7 @@ public:
   static std::shared_ptr<spdlog::logger> &get_logger() { return s_logger; }
   static void init() {
     s_logger = spdlog::stdout_color_mt("logger");
-    s_logger->set_level(spdlog::level::info);
+    s_logger->set_level(spdlog::level::trace);
   }
 
 private:
@@ -19,7 +19,7 @@ private:
 #define MC_FATAL(...) Logger::get_logger()->critical(__VA_ARGS__)
 #define MC_ERROR(...) Logger::get_logger()->error(__VA_ARGS__)
 
-#if defined(MC_DEBUG)
+#if defined(MC_DEBUG_BUILD)
 
 #define MC_WARN(...) Logger::get_logger()->warn(__VA_ARGS__)
 #define MC_DEBUG(...) Logger::get_logger()->debug(__VA_ARGS__)

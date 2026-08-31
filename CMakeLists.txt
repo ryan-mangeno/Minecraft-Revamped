@@ -102,7 +102,7 @@ if(MSVC)
     )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(Minecraft PRIVATE
-        /MC_DEBUG
+        /MC_DEBUG_BUILD
     )
 endif()
 else()
@@ -115,9 +115,7 @@ else()
 
     )
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(Minecraft PRIVATE
-        -DMCDEBUG=ON
-    )
+    target_compile_definitions(Minecraft PRIVATE MC_DEBUG_BUILD)
 endif()
 endif()
 
@@ -125,6 +123,12 @@ endif()
 # -------------------------
 # Resources
 # -------------------------
+
+# Load resources directly from the source tree while developing. This keeps
+# shader and texture edits from depending on the executable's copied resources.
+target_compile_definitions(Minecraft PRIVATE
+    MINECRAFT_RESOURCE_DIR="${CMAKE_SOURCE_DIR}/Minecraft/Resources"
+)
 
 add_custom_command(TARGET Minecraft POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory

@@ -61,6 +61,7 @@ void Minecraft::Run() {
     main_shader->SetUniformMat4f("projection", camera.GetProjMat());
 
     world.Update(camera.GetPos(), main_shader);
+    world.Render(main_shader);
     camera.OnUpdate(appAttribs.GetDeltaTime());
 
     glfwPollEvents();
@@ -94,21 +95,39 @@ bool Minecraft::initGL() {
 #endif
 
     // Create window
-    window =
-        glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Minecraft", NULL, NULL);
+    window = glfwCreateWindow(
+        SCREEN_WIDTH,
+        SCREEN_HEIGHT,
+        "Minecraft",
+        NULL,
+        NULL
+    );
+
     if (window == NULL) {
-      std::cout << "Failed to create GLFW window\n";
-      glfwTerminate();
-      success = false;
+        MC_ERROR("Failed to create GLFW window");
+        glfwTerminate();
+        success = false;
+        return success;
     }
+
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    // Initialize GLAD
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-      std::cout << "Failed to initialize GLAD\n";
-      success = false;
+        MC_ERROR("Failed to initialize GLAD");
+        success = false;
+        return success;
     }
+
+    MC_DEBUG(
+        "OpenGL: {}",
+        reinterpret_cast<const char*>(glGetString(GL_VERSION))
+    );
+
+    MC_DEBUG(
+        "GLSL: {}",
+        reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))
+    );
 
     // Configure viewport and rendering
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);

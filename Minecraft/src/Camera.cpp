@@ -148,8 +148,12 @@ void Camera::DispatchMouseScrollEvent(float scroll)
 // calculates the front vector from the camera's updated euler angles
 void Camera::updateCameraVectors()
 {
-    // clamp doesnt mutate in place, need to assign it back
-    m_Yaw = glm::clamp(m_Yaw, -180.f, 180.f);
+    // Yaw is circular: crossing either boundary should continue from the
+    // equivalent angle on the other side instead of stopping rotation.
+    if (m_Yaw > 180.0f)
+        m_Yaw -= 360.0f;
+    else if (m_Yaw < -180.0f)
+        m_Yaw += 360.0f;
 
     // cos m_Pitch dampens x rot when looking very high or low
     m_Orientation.x = cos(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));

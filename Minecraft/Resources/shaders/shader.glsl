@@ -2,12 +2,14 @@
 #version 410 core
 
 layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTexCoord;
-layout (location = 2) in vec3 aNormal;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoord;
 
 out vec2 TexCoord;
+out float Brightness;
 
-uniform float texMultiplier;
+uniform vec3 uSunPos;
+uniform sampler2D tex;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -15,14 +17,21 @@ uniform mat4 projection;
 
 void main()
 {
-	gl_Position = projection * view * model * vec4(aPos, 1.0);
-	TexCoord = aTexCoord * texMultiplier;
+    vec3 worldPos = vec3(model * vec4(aPos, 1.0));
+
+    gl_Position = projection * view * vec4(worldPos, 1.0);
+
+    TexCoord = aTexCoord / vec2(textureSize(tex, 0));
+
+    vec3 lightDir = normalize(uSunPos - worldPos);
+    Brightness = max(0.0, dot(aNormal, lightDir));
 }
 
 #shader fragment
 #version 410 core
 
 in vec2 TexCoord;
+in float Brightness;
 
 out vec4 FragColor;
 
@@ -30,14 +39,6 @@ uniform sampler2D tex;
 
 void main()
 {
-	// Transform from [-128, 128] range to [0, 256] range
-    //vec2 transformedTexCoord = TexCoord + 128.0;  // Shift from [-128, 128] to [0, 256]
-
-	// Normalize to [0, 1] range by dividing by 256
-    vec2 normalizedTexCoord = TexCoord / 128.0f;
-
-    // Clamp to ensure it stays within the [0, 1] range, in case coordinates are outside bounds
-    normalizedTexCoord = clamp(normalizedTexCoord, 0.0, 1.0);
-
-	FragColor = texture(tex, normalizedTexCoord);
+	float ambient = 0.5f;
+	FragColor = texture(tex, TexCoord) * (Brightness + ambient);
 }

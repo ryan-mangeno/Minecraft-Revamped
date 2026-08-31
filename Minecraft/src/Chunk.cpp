@@ -156,16 +156,16 @@ void Chunk::RemakeChunk() {
           }
           if (southBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[SOUTH],
                        glm::vec2(block->sideMinX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[SOUTH],
                        glm::vec2(block->sideMaxX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[SOUTH],
                        glm::vec2(block->sideMinX, block->sideMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[SOUTH],
                        glm::vec2(block->sideMaxX, block->sideMaxY)));
 
             m_Indices.push_back(currentVertex + 0);
@@ -191,16 +191,16 @@ void Chunk::RemakeChunk() {
           }
           if (westBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 0), DIRECTION_VEC[WEST],
                        glm::vec2(block->sideMinX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[WEST],
                        glm::vec2(block->sideMaxX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 0), DIRECTION_VEC[WEST],
                        glm::vec2(block->sideMinX, block->sideMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[WEST],
                        glm::vec2(block->sideMaxX, block->sideMaxY)));
 
             m_Indices.push_back(currentVertex + 0);
@@ -225,16 +225,16 @@ void Chunk::RemakeChunk() {
           }
           if (eastBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[EAST],
                        glm::vec2(block->sideMinX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 0), DIRECTION_VEC[EAST],
                        glm::vec2(block->sideMaxX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[EAST],
                        glm::vec2(block->sideMinX, block->sideMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 0), DIRECTION_VEC[EAST],
                        glm::vec2(block->sideMaxX, block->sideMaxY)));
 
             m_Indices.push_back(currentVertex + 0);
@@ -260,16 +260,16 @@ void Chunk::RemakeChunk() {
           }
           if (bottomBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[DOWN],
                        glm::vec2(block->bottomMinX, block->bottomMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[DOWN],
                        glm::vec2(block->bottomMaxX, block->bottomMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 0), DIRECTION_VEC[DOWN],
                        glm::vec2(block->bottomMinX, block->bottomMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 0), DIRECTION_VEC[DOWN],
                        glm::vec2(block->bottomMaxX, block->bottomMaxY)));
             m_Indices.push_back(currentVertex + 0);
             m_Indices.push_back(currentVertex + 3);
@@ -293,16 +293,16 @@ void Chunk::RemakeChunk() {
           }
           if (topBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[UP],
                        glm::vec2(block->topMinX, block->topMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[UP],
                        glm::vec2(block->topMaxX, block->topMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 0), DIRECTION_VEC[UP],
                        glm::vec2(block->topMinX, block->topMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 0), DIRECTION_VEC[UP],
                        glm::vec2(block->topMaxX, block->topMaxY)));
 
             m_Indices.push_back(currentVertex + 0);
@@ -420,16 +420,16 @@ void Chunk::GenerateChunk() {
           }
           if (southBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[SOUTH],
                        glm::vec2(block->sideMinX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[SOUTH],
                        glm::vec2(block->sideMaxX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[SOUTH],
                        glm::vec2(block->sideMinX, block->sideMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[SOUTH],
                        glm::vec2(block->sideMaxX, block->sideMaxY)));
 
             m_Indices.push_back(currentVertex + 0);
@@ -455,16 +455,16 @@ void Chunk::GenerateChunk() {
           }
           if (westBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 0), DIRECTION_VEC[WEST],
                        glm::vec2(block->sideMinX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[WEST],
                        glm::vec2(block->sideMaxX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 0), DIRECTION_VEC[WEST],
                        glm::vec2(block->sideMinX, block->sideMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[WEST],
                        glm::vec2(block->sideMaxX, block->sideMaxY)));
 
             m_Indices.push_back(currentVertex + 0);
@@ -489,16 +489,16 @@ void Chunk::GenerateChunk() {
           }
           if (eastBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[EAST],
                        glm::vec2(block->sideMinX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 0), DIRECTION_VEC[EAST],
                        glm::vec2(block->sideMaxX, block->sideMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[EAST],
                        glm::vec2(block->sideMinX, block->sideMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 0), DIRECTION_VEC[EAST],
                        glm::vec2(block->sideMaxX, block->sideMaxY)));
 
             m_Indices.push_back(currentVertex + 0);
@@ -524,16 +524,16 @@ void Chunk::GenerateChunk() {
           }
           if (bottomBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 1), DIRECTION_VEC[DOWN],
                        glm::vec2(block->bottomMinX, block->bottomMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 1), DIRECTION_VEC[DOWN],
                        glm::vec2(block->bottomMaxX, block->bottomMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 0, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 0, z + 0), DIRECTION_VEC[DOWN],
                        glm::vec2(block->bottomMinX, block->bottomMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 0, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 0, z + 0), DIRECTION_VEC[DOWN],
                        glm::vec2(block->bottomMaxX, block->bottomMaxY)));
             m_Indices.push_back(currentVertex + 0);
             m_Indices.push_back(currentVertex + 3);
@@ -557,16 +557,16 @@ void Chunk::GenerateChunk() {
           }
           if (topBlock == Blocks::AIR) {
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 1), DIRECTION_VEC[UP],
                        glm::vec2(block->topMinX, block->topMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 1), DIRECTION_VEC[UP],
                        glm::vec2(block->topMaxX, block->topMinY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 0, y + 1, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 0, y + 1, z + 0), DIRECTION_VEC[UP],
                        glm::vec2(block->topMinX, block->topMaxY)));
             m_Vertices.push_back(
-                Vertex(glm::vec3(x + 1, y + 1, z + 0), DIRECTION_VEC[NORTH],
+                Vertex(glm::vec3(x + 1, y + 1, z + 0), DIRECTION_VEC[UP],
                        glm::vec2(block->topMaxX, block->topMaxY)));
 
             m_Indices.push_back(currentVertex + 0);
@@ -650,7 +650,7 @@ void Chunk::OnUpdate() {
   }
 }
 
-void Chunk::Render(Shader *shader) {
+void Chunk::TryRender(Shader *shader) {
   if (m_Render && m_Ready) {
     shader->Bind();
 

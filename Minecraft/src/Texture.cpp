@@ -45,7 +45,7 @@ Texture& Texture::GetTexture(int index) {
 void Texture::InitTextures()
 {
 	m_Textures[0] = Texture(
-    (getExecutablePath() / "Resources/textures/block_map.png").string(),
+    (getResourcePath() / "textures/block_map.png").string(),
     16
 );
 }

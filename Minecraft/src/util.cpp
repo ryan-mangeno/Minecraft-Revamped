@@ -13,3 +13,11 @@ std::filesystem::path getExecutablePath() {
 
   return std::filesystem::path(buffer).parent_path();
 }
+
+std::filesystem::path getResourcePath() {
+#ifdef MINECRAFT_RESOURCE_DIR
+  return std::filesystem::path(MINECRAFT_RESOURCE_DIR);
+#else
+  return getExecutablePath() / "Resources";
+#endif
+}

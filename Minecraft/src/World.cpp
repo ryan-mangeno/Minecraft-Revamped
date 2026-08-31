@@ -104,10 +104,23 @@ void World::Update(glm::vec3 camPos, Shader *shader) {
     } else {
       it->second.OnUpdate();
       it->second.SetRender(true);
-      it->second.Render(shader);
       m_NumChunksRendered++;
       ++it;
     }
+  }
+
+  // update sun pos here as well but sun pos is static for now
+  m_Atmosphere.update();
+}
+
+void World::Render(Shader *shader) {
+
+  // set sun pos
+  shader->Bind();
+  shader->SetUniformVec3f("uSunPos", m_Atmosphere.get_sun_pos());
+
+  for (auto it = m_Chunks.begin(); it != m_Chunks.end(); it++) {
+    it->second.TryRender(shader);
   }
 }
 

@@ -35,7 +35,7 @@ public:
   ~Chunk();
 
   void GenerateChunk();
-  void Render(Shader *shader);
+  void TryRender(Shader *shader);
   void OnUpdate();
 
   inline void SetRender(bool render) { m_Render = render; }

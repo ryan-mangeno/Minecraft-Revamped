@@ -17,8 +17,8 @@ Shader::Shader(const std::string &filepath) : m_UniformLocationCache() {
   const char *vertexSource = shaderCode.VertexSource.c_str();
   const char *fragmentSource = shaderCode.FragmentSource.c_str();
 
-  MC_DEBUG("Vertex Shader:\n %s", vertexSource);
-  MC_DEBUG("Fragment Shader:\n %s", fragmentSource);
+  MC_DEBUG("Vertex Shader:\n {}", vertexSource);
+  MC_DEBUG("Fragment Shader:\n {}", fragmentSource);
 
   // Create Vertex Shader Object and get its reference
   GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -98,7 +98,7 @@ void Shader::SetUniform3fs(const std::string &uni_name,
 }
 
 void Shader::InitShaders() {
-  auto resourcePath = getExecutablePath() / "Resources/shaders/shader.glsl";
+  auto resourcePath = getResourcePath() / "shaders/shader.glsl";
 
   Shader *main_shader = new Shader(resourcePath.string());
 
@@ -106,7 +106,6 @@ void Shader::InitShaders() {
 
   main_shader->Bind();
 
-  main_shader->SetUniform1f("texMultiplier", 0.5f);
   main_shader->SetUniform1i("tex", 0);
 
   main_shader->Unbind();
@@ -136,7 +135,7 @@ GLint Shader::getUniform(const std::string &name) {
 
   GLint loc = glGetUniformLocation(m_ID, name.c_str());
   if (loc == -1)
-    MC_WARN("Uniform: %s, does not exist...", name.c_str());
+    MC_WARN("Uniform: {}, does not exist...", name.c_str());
   else
     m_UniformLocationCache[name] = loc;
 
@@ -148,7 +147,7 @@ Shader *Shader::getShader(const std::string &name) {
     return m_ShaderLocationCache[name];
 
   else
-    MC_ERROR("Couldn't find shader name: %s", name.c_str());
+    MC_ERROR("Couldn't find shader name: {}", name.c_str());
 
   return nullptr;
 }
@@ -181,13 +180,13 @@ void Shader::compileErrors(unsigned int shader, const char *type) {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &hasCompiled);
     if (hasCompiled == GL_FALSE) {
       glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-      MC_ERROR("Shader %s failed to compile: %s", type, infoLog);
+      MC_ERROR("Shader {} failed to compile: {}", type, infoLog);
     }
   } else {
     glGetProgramiv(shader, GL_LINK_STATUS, &hasCompiled);
     if (hasCompiled == GL_FALSE) {
       glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-      MC_ERROR("Shader %s failed to link: %s", type, infoLog);
+      MC_ERROR("Shader {} failed to link: {}", type, infoLog);
     }
   }
 }
