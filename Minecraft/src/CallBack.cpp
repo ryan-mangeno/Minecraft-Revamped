@@ -27,13 +27,13 @@ void processInput(GLFWwindow* window)
 
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(FORWARD, deltaTime);
+		camera.DispatchKeyboardEvent(NORTH, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(BACK, deltaTime);
+		camera.DispatchKeyboardEvent(SOUTH, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(LEFT, deltaTime);
+		camera.DispatchKeyboardEvent(WEST, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(RIGHT, deltaTime);
+		camera.DispatchKeyboardEvent(EAST, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		camera.DispatchKeyboardEvent(UP, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)

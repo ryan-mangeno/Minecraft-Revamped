@@ -1,12 +1,12 @@
 #ifndef MATH_UTIL_H
 #define MATH_UTIL_H
 
-struct Vertex {
-  char x, y, z;
-  char tex_x, tex_y;
+#include <glm/glm.hpp>
 
-  Vertex(char x, char y, char z, char tex_x, char tex_y)
-      : x(x), y(y), z(z), tex_x(tex_x), tex_y(tex_y) {}
+struct Vertex {
+  glm::vec3 position;
+  glm::vec3 normal;
+  glm::vec2 tex_coords;
 };
 
 enum Corner {
@@ -16,11 +16,9 @@ enum Corner {
   TOP_RIGHT,
 };
 
-struct Normal {
-  float x, y, z;
-};
+enum Direction : int8_t { NORTH = 0, SOUTH, EAST, WEST, UP, DOWN, NONE };
 
-constexpr Normal DIRECTION_VEC[6] = {{0, 0, 1}, {-1, 0, 0}, {0, 0, -1},
-                                     {1, 0, 0}, {0, -1, 0}, {0, 1, 0}};
+constexpr glm::vec3 DIRECTION_VEC[6] = {{0, 0, 1},  {0, 0, -1}, {1, 0, 0},
+                                        {-1, 0, 0}, {0, 1, 0},  {0, -1, 0}};
 
 #endif

@@ -37,7 +37,7 @@ glm::mat4 Camera::CalcViewMatrix() const
 {
     return glm::lookAt(m_Position, m_Position + m_Orientation, g_Up);
 }
-void Camera::DispatchKeyboardEvent(MovementDir dir, float deltaTime)
+void Camera::DispatchKeyboardEvent(Direction dir, float deltaTime)
 {
 
     float velocity = m_Speed * deltaTime;
@@ -45,10 +45,10 @@ void Camera::DispatchKeyboardEvent(MovementDir dir, float deltaTime)
     glm::vec3 backward = glm::cross(m_Right, g_Up);
 
     switch (dir) {
-        case FORWARD:      m_PositionUpdate += -backward * velocity; break;
-        case BACK:         m_PositionUpdate +=  backward * velocity; break;
-        case LEFT:         m_PositionUpdate +=       -m_Right * velocity; break;
-        case RIGHT:        m_PositionUpdate +=        m_Right * velocity; break;
+        case NORTH:      m_PositionUpdate += -backward * velocity; break;
+        case SOUTH:         m_PositionUpdate +=  backward * velocity; break;
+        case WEST:         m_PositionUpdate +=       -m_Right * velocity; break;
+        case EAST:        m_PositionUpdate +=        m_Right * velocity; break;
         case UP:           m_PositionUpdate += g_Up * velocity; m_Velocity = 5.0f; break;
         case DOWN:         m_PositionUpdate +=          -g_Up * velocity; break;
         case NONE:                                                  break;

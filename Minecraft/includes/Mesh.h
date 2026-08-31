@@ -2,9 +2,10 @@
 #define MESH_H
 
 #include "Shader.h"
+#include "math_util.h"
 
-#include <string>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <assimp/Importer.hpp>
@@ -13,38 +14,30 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 namespace ModelLoader {
 
-	struct Vertex {
-		glm::vec3 Position;
-		glm::vec3 Normal;
-		glm::vec2 TexCoords;
-	};
+struct Texture {
+  GLuint id;
+  std::string type;
+  aiString path;
+};
 
-	struct Texture {
-		GLuint id;
-		std::string type;
-		aiString path;
-	};
+class Mesh {
+public:
+  std::vector<Vertex> vertices;
+  std::vector<GLuint> indices;
+  std::vector<Texture> textures;
 
+  Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
+       std::vector<Texture> textures);
 
-	class Mesh {
-	public:
-		std::vector<Vertex> vertices;
-		std::vector<GLuint> indices;
-		std::vector<Texture> textures;
+  void Render(Shader *shader);
 
-		Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
+private:
+  GLuint VAO, VBO, EBO;
 
-		void Render(Shader* shader);
+  void SetupMesh();
+};
 
-	private:
-		GLuint VAO, VBO, EBO;
-
-		void SetupMesh();
-	};
-
-
-}
+} // namespace ModelLoader
 #endif

@@ -6,8 +6,6 @@
 #include "constants.h"
 #include "math_util.h"
 
-enum MovementDir { NONE = 0, LEFT, RIGHT, UP, DOWN, FORWARD, BACK };
-
 class Camera {
 public:
   glm::mat4 CalcViewMatrix() const;
@@ -17,7 +15,7 @@ public:
   inline float GetZoom() { return m_Zoom; }
   inline glm::vec3 &GetOrientation() { return m_Orientation; }
 
-  void DispatchKeyboardEvent(MovementDir direction, float deltaTime);
+  void DispatchKeyboardEvent(Direction direction, float deltaTime);
   void DispatchMouseMoveEvent(float xrot, float yrot);
   void DispatchMouseScrollEvent(float scroll);
 
