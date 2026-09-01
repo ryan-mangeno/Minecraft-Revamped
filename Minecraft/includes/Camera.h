@@ -10,10 +10,10 @@ class Camera {
 public:
   glm::mat4 CalcViewMatrix() const;
 
-  inline glm::vec3 &GetPos() { return m_Position; }
-  inline glm::mat4 &GetProjMat() { return m_ProjectionMat; }
-  inline float GetZoom() { return m_Zoom; }
-  inline glm::vec3 &GetOrientation() { return m_Orientation; }
+  inline const glm::vec3 &GetPos() const { return m_Position; }
+  inline const glm::mat4 &GetProjMat() const { return m_ProjectionMat; }
+  inline const float GetZoom() const { return m_Zoom; }
+  inline const glm::vec3 &GetOrientation() const { return m_Orientation; }
 
   void DispatchKeyboardEvent(Direction direction, float deltaTime);
   void DispatchMouseMoveEvent(float xrot, float yrot);

@@ -9,6 +9,9 @@ out vec2 TexCoord;
 out float Brightness;
 
 uniform vec3 uSunPos;
+uniform vec3 uCamPos;
+uniform float uAmbient;
+uniform float uSpecular;
 uniform sampler2D tex;
 
 uniform mat4 model;
@@ -24,7 +27,13 @@ void main()
     TexCoord = aTexCoord / vec2(textureSize(tex, 0));
 
     vec3 lightDir = normalize(uSunPos - worldPos);
-    Brightness = max(0.0, dot(aNormal, lightDir));
+    vec3 viewDir = normalize(uCamPos - worldPos);
+    vec3 reflectDir = reflect(-lightDir, aNormal);
+
+    float specular = pow(max(0.0, dot(reflectDir, viewDir)), uSpecular);
+    float diffuse = max(0.0, dot(aNormal, lightDir));
+
+    Brightness = specular + diffuse + uAmbient;
 }
 
 #shader fragment
@@ -39,6 +48,5 @@ uniform sampler2D tex;
 
 void main()
 {
-	float ambient = 0.5f;
-	FragColor = texture(tex, TexCoord) * (Brightness + ambient);
+	FragColor = texture(tex, TexCoord) * Brightness;
 }

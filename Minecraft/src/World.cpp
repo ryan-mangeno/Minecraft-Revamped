@@ -110,7 +110,7 @@ void World::Update(glm::vec3 camPos, Shader *shader) {
   }
 
   // update sun pos here as well but sun pos is static for now
-  m_Atmosphere.update();
+  m_Atmosphere.update(shader);
 }
 
 void World::Render(Shader *shader) {
