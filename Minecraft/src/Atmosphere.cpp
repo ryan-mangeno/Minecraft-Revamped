@@ -8,8 +8,12 @@ void Atmosphere::update(Shader *shader) {
   const Camera &cam = Camera::GetCamera();
 
   shader->Bind();
-  shader->SetUniform1f("uAmbient", m_ambient_strength);
-  shader->SetUniform1f("uSpecular", m_specular_strength);
+
+  // these uniforms are somewhat static but can add sliders
+  shader->SetUniform1f("uAmbientStrength", m_ambient_strength);
+  shader->SetUniform1f("uSpecularStrength", m_specular_strength);
+  shader->SetUniform1f("uShininess", m_shininess);
+
   shader->SetUniformVec3f("uCamPos", cam.GetPos());
 }
 
