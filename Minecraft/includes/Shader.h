@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cerrno>
 #include <unordered_map>
+#include <vector>
 
 
 #include <glm/glm.hpp>
@@ -42,7 +43,8 @@ class Shader
 		void SetUniformMat4f(const std::string& uni_name, const glm::mat4& matrix);
 		void SetUniformVec3f(const std::string& uni_name, const glm::vec3& vector);
 		void SetUniformVec4f(const std::string& uni_name, const glm::vec4& vector);
-		void SetUniform3fs(const std::string& uni_name, const glm::vec3 vector[6]);
+		void SetUniformVec3Array(const std::string& uni_name,
+		                         const std::vector<glm::vec3>& values);
 
 		GLint getUniform(const std::string& uni_name);
 		static Shader* getShader(const std::string& shader_name);

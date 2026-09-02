@@ -17,7 +17,7 @@
 namespace ModelLoader {
 
 struct Texture {
-  GLuint id;
+  GLuint id{0};
   std::string type;
   aiString path;
 };

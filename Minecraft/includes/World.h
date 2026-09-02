@@ -9,6 +9,7 @@
 #include "Atmosphere.h"
 #include "Chunk.h"
 #include "Hash.h"
+#include "Model.h"
 #include "Shader.h"
 #include "util.h"
 
@@ -22,7 +23,7 @@ public:
 
   std::vector<unsigned int> &GetChunkData(int chunkX, int chunkY, int chunkZ);
   void Update(glm::vec3 camPos, Shader *shader);
-  void Render(Shader *shader);
+  void Render(Shader *terrainShader, Shader *modelShader);
 
   inline void SetDirtyChunk(int chunkX, int chunkY, int chunkZ) {
     cTuple chunkTuple{chunkX, chunkY, chunkZ};
@@ -66,4 +67,5 @@ private:
   int m_PrevCamZ;
 
   Atmosphere m_Atmosphere;
+  ModelLoader::Model m_TorchModel;
 };

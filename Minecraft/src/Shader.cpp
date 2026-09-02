@@ -92,17 +92,23 @@ void Shader::SetUniformMat4f(const std::string &uni_name,
   glUniformMatrix4fv(getUniform(uni_name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void Shader::SetUniform3fs(const std::string &uni_name,
-                           const glm::vec3 vector[6]) {
-  glUniform3fv(getUniform(uni_name), 6, glm::value_ptr(vector[0]));
+void Shader::SetUniformVec3Array(const std::string &uni_name,
+                                 const std::vector<glm::vec3> &values) {
+  if (values.empty())
+    return;
+
+  glUniform3fv(getUniform(uni_name), static_cast<GLsizei>(values.size()),
+               glm::value_ptr(values.front()));
 }
 
 void Shader::InitShaders() {
-  auto resourcePath = getResourcePath() / "shaders/shader.glsl";
+  const auto shaderPath = getResourcePath() / "shaders";
 
-  Shader *main_shader = new Shader(resourcePath.string());
+  Shader *main_shader = new Shader((shaderPath / "shader.glsl").string());
+  Shader *model_shader = new Shader((shaderPath / "model.glsl").string());
 
   m_ShaderLocationCache["main_shader"] = main_shader;
+  m_ShaderLocationCache["model_shader"] = model_shader;
 
   main_shader->Bind();
 
@@ -110,9 +116,9 @@ void Shader::InitShaders() {
 
   main_shader->Unbind();
 
-  // not yet
-  // Shader* modelShader = new Shader("resources/model.shader");
-  // m_ShaderLocationCache["model.shader"] = modelShader;
+  model_shader->Bind();
+  model_shader->SetUniform1i("texture_diffuse1", 1);
+  model_shader->Unbind();
 }
 
 void Shader::BindShaderID(GLint ID) { glUseProgram(ID); }

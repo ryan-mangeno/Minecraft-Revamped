@@ -6,7 +6,15 @@
 
 World::World()
     : m_ThreadPool(4), m_RenderHeight(1), m_ChunksLoading(0), m_NumChunks(0),
-      m_NumChunksRendered(0), m_PrevCamX(0), m_PrevCamY(20), m_PrevCamZ(0) {}
+      m_NumChunksRendered(0), m_PrevCamX(0), m_PrevCamY(20), m_PrevCamZ(0),
+      m_TorchModel(
+          (getResourcePath() / "assets/minecraft_torch.glb").string()) {
+  m_Atmosphere.add_light({0.0f, 30.0f, 0.0f});
+
+  // The OpenGL context exists before World is first requested in
+  // Minecraft::Run.
+  m_TorchModel.Init();
+}
 
 World::~World() {}
 
@@ -113,14 +121,23 @@ void World::Update(glm::vec3 camPos, Shader *shader) {
   m_Atmosphere.update(shader);
 }
 
-void World::Render(Shader *shader) {
+void World::Render(Shader *terrainShader, Shader *modelShader) {
 
   // set sun pos
-  shader->Bind();
-  shader->SetUniformVec3f("uSunPos", m_Atmosphere.get_sun_pos());
+  terrainShader->Bind();
+  terrainShader->SetUniformVec3f("uSunPos", m_Atmosphere.get_sun_pos());
 
   for (auto it = m_Chunks.begin(); it != m_Chunks.end(); it++) {
-    it->second.TryRender(shader);
+    it->second.TryRender(terrainShader);
+  }
+
+  modelShader->Bind();
+  for (const glm::vec3 &lightPosition : m_Atmosphere.get_point_lights()) {
+    glm::mat4 model(1.0f);
+    model = glm::translate(model, lightPosition);
+    model = glm::scale(model, glm::vec3(0.1f));
+    modelShader->SetUniformMat4f("model", model);
+    m_TorchModel.Render(modelShader);
   }
 }
 

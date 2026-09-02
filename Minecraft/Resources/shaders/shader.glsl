@@ -15,6 +15,10 @@ uniform float uSpecularStrength;
 uniform float uShininess;
 uniform sampler2D tex;
 
+const int MAX_POINT_LIGHTS = 16;
+uniform int uPointLightCount;
+uniform vec3 uPointLightPositions[MAX_POINT_LIGHTS];
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -35,6 +39,16 @@ void main()
     float diffuse = max(0.0, dot(aNormal, lightDir));
 
     Brightness = specular + diffuse + uAmbientStrength;
+
+    // todo: add coloring to point lights
+    for (int i = 0; i < uPointLightCount; ++i) {
+        vec3 toLight = uPointLightPositions[i] - worldPos;
+        float distanceToLight = length(toLight);
+        vec3 pointLightDir = normalize(toLight);
+        float pointDiffuse = max(0.0, dot(aNormal, pointLightDir));
+        float attenuation = 1.0 / (1.0 + distanceToLight * distanceToLight);
+        Brightness += pointDiffuse * attenuation;
+    }
 }
 
 #shader fragment

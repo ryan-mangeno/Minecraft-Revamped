@@ -32,6 +32,7 @@ void Minecraft::Run() {
   Texture::InitTextures();
 
   Shader *main_shader = Shader::getShader("main_shader");
+  Shader *model_shader = Shader::getShader("model_shader");
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -59,9 +60,12 @@ void Minecraft::Run() {
 
     main_shader->SetUniformMat4f("view", view);
     main_shader->SetUniformMat4f("projection", camera.GetProjMat());
+    model_shader->Bind();
+    model_shader->SetUniformMat4f("view", view);
+    model_shader->SetUniformMat4f("projection", camera.GetProjMat());
 
     world.Update(camera.GetPos(), main_shader);
-    world.Render(main_shader);
+    world.Render(main_shader, model_shader);
     camera.OnUpdate(appAttribs.GetDeltaTime());
 
     glfwPollEvents();
@@ -95,39 +99,30 @@ bool Minecraft::initGL() {
 #endif
 
     // Create window
-    window = glfwCreateWindow(
-        SCREEN_WIDTH,
-        SCREEN_HEIGHT,
-        "Minecraft",
-        NULL,
-        NULL
-    );
+    window =
+        glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Minecraft", NULL, NULL);
 
     if (window == NULL) {
-        MC_ERROR("Failed to create GLFW window");
-        glfwTerminate();
-        success = false;
-        return success;
+      MC_ERROR("Failed to create GLFW window");
+      glfwTerminate();
+      success = false;
+      return success;
     }
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        MC_ERROR("Failed to initialize GLAD");
-        success = false;
-        return success;
+      MC_ERROR("Failed to initialize GLAD");
+      success = false;
+      return success;
     }
 
-    MC_DEBUG(
-        "OpenGL: {}",
-        reinterpret_cast<const char*>(glGetString(GL_VERSION))
-    );
+    MC_DEBUG("OpenGL: {}",
+             reinterpret_cast<const char *>(glGetString(GL_VERSION)));
 
-    MC_DEBUG(
-        "GLSL: {}",
-        reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))
-    );
+    MC_DEBUG("GLSL: {}", reinterpret_cast<const char *>(
+                             glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // Configure viewport and rendering
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);

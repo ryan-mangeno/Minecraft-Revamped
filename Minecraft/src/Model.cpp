@@ -1,39 +1,73 @@
 #include "Model.h"
 #include "Debug.h"
+#include "Log.h"
 #include "math_util.h"
 
 #include <glad/glad.h>
 
 namespace ModelLoader {
 
+namespace {
+
+GLenum textureFormat(int componentCount) {
+  if (componentCount == 1)
+    return GL_RED;
+  if (componentCount == 3)
+    return GL_RGB;
+  if (componentCount == 4)
+    return GL_RGBA;
+  return 0;
+}
+
+GLuint uploadTexture(const unsigned char *data, int width, int height,
+                     int componentCount) {
+  const GLenum format = textureFormat(componentCount);
+  if (!data || format == 0)
+    return 0;
+
+  GLuint textureID = 0;
+  glGenTextures(1, &textureID);
+  glBindTexture(GL_TEXTURE_2D, textureID);
+  glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
+               GL_UNSIGNED_BYTE, data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  return textureID;
+}
+
+GLuint textureFromEmbedded(const aiTexture *embedded) {
+  if (!embedded || embedded->mHeight != 0) {
+    MC_ERROR("Only compressed embedded model textures are supported for now");
+    return 0;
+  }
+
+  int width = 0;
+  int height = 0;
+  int componentCount = 0;
+  unsigned char *data = stbi_load_from_memory(
+      reinterpret_cast<const stbi_uc *>(embedded->pcData),
+      static_cast<int>(embedded->mWidth), &width, &height, &componentCount, 0);
+
+  const GLuint textureID = uploadTexture(data, width, height, componentCount);
+  stbi_image_free(data);
+  return textureID;
+}
+
+} // namespace
+
 GLint TextureFromFile(const char *fname, const std::string &directory) {
   std::string filename(fname);
   filename = directory + '/' + filename;
-  unsigned int textureID;
-  glGenTextures(1, &textureID);
   int width, height, nrComponents;
   unsigned char *data =
       stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+  GLuint textureID = 0;
   if (data) {
-    GLenum format;
-    if (nrComponents == 1)
-      format = GL_RED;
-    else if (nrComponents == 3)
-      format = GL_RGB;
-    else if (nrComponents == 4)
-      format = GL_RGBA;
-
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
-                 GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+    textureID = uploadTexture(data, width, height, nrComponents);
     stbi_image_free(data);
   } else {
     std::cout << "Texture failed to load at path: " << filename << std::endl;
@@ -43,9 +77,12 @@ GLint TextureFromFile(const char *fname, const std::string &directory) {
   return textureID;
 }
 
-Model::Model(const char *fname) : filePath(fname) {}
+Model::Model(const std::string &fname) : filePath(fname) {}
 
-void Model::Init() { loadModel(filePath); }
+void Model::Init() {
+  loadModel(filePath);
+  MC_DEBUG("Loading {} model", filePath.c_str());
+}
 
 void Model::Render(Shader *shader) {
 
@@ -54,17 +91,18 @@ void Model::Render(Shader *shader) {
   }
 }
 
-void Model::loadModel(std::string path) {
+void Model::loadModel(const std::string &path) {
   // read file via ASSIMP
   Assimp::Importer importer;
   const aiScene *scene = importer.ReadFile(
       path, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices |
-                aiProcess_GenUVCoords | aiProcess_TransformUVCoords);
+                aiProcess_GenUVCoords | aiProcess_TransformUVCoords |
+                aiProcess_FlipWindingOrder);
   // check for errors
   if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
       !scene->mRootNode) // if is Not Zero
   {
-    std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+    MC_ERROR("ERROR::ASSIMP:: {}", importer.GetErrorString());
     return;
   }
   // retrieve the directory path of the filepath
@@ -140,12 +178,12 @@ ModelLoader::Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 
   aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-  std::vector<ModelLoader::Texture> diffuseMaps =
-      loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+  std::vector<ModelLoader::Texture> diffuseMaps = loadMaterialTextures(
+      material, aiTextureType_DIFFUSE, "texture_diffuse", scene);
   textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
   std::vector<ModelLoader::Texture> specularMaps = loadMaterialTextures(
-      material, aiTextureType_SPECULAR, "texture_specular");
+      material, aiTextureType_SPECULAR, "texture_specular", scene);
   textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
   return ModelLoader::Mesh(vertices, indices, textures);
@@ -153,7 +191,7 @@ ModelLoader::Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 
 std::vector<ModelLoader::Texture>
 Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
-                            std::string typeName) {
+                            const std::string &typeName, const aiScene *scene) {
   std::vector<ModelLoader::Texture> textures;
 
   for (GLuint i = 0; i < mat->GetTextureCount(type); i++) {
@@ -177,7 +215,10 @@ Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
     if (!skip) { // If texture hasn't been loaded already, load it
       ModelLoader::Texture texture;
 
-      texture.id = TextureFromFile(str.C_Str(), directory);
+      if (const aiTexture *embedded = scene->GetEmbeddedTexture(str.C_Str()))
+        texture.id = textureFromEmbedded(embedded);
+      else
+        texture.id = TextureFromFile(str.C_Str(), directory);
       texture.type = typeName;
       texture.path = str;
       textures.push_back(texture);
