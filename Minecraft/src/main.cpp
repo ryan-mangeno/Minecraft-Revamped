@@ -8,7 +8,7 @@ int main() {
 
   MC_INFO("Starting ...");
   Minecraft app;
-  app.Run();
+  app.run();
 
   MC_INFO("Shutting Down ...");
 }

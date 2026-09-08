@@ -29,12 +29,12 @@ class Minecraft {
 
 private:
 
-	bool initGL();
+	bool init_gl();
 
 public:
 
-	void Init();
-	void Run();
+	void init();
+	void run();
 
 
 	Minecraft() {}

@@ -12,13 +12,13 @@ class Object
 public:
 	Object();
 
-	static void DestroyObjects();
+	static void destroy_objects();
 
 protected:
 
-	static std::vector<GLuint> m_VBOS;
-	static std::vector<GLuint> m_VAOS;
-	static std::vector<GLuint> m_EBOS;
+	static std::vector<GLuint> m_vbos;
+	static std::vector<GLuint> m_vaos;
+	static std::vector<GLuint> m_ebos;
 };
 
 

@@ -31,41 +31,41 @@ class Chunk {
 public:
   Chunk();
 
-  Chunk(glm::vec3 chunkPos, Thread::ThreadPool &tp);
+  Chunk(glm::vec3 chunk_pos, Thread::ThreadPool &tp);
   ~Chunk();
 
-  void GenerateChunk();
-  void TryRender(Shader *shader);
-  void OnUpdate();
+  void generate_chunk();
+  void try_render(Shader *shader);
+  void on_update();
 
-  inline void SetRender(bool render) { m_Render = render; }
-  inline bool GetReadyStatus() { return m_Ready; }
-  inline glm::vec3 &GetPos() { return m_ChunkPos; }
-  inline uvec &GetData() { return m_ChunkData; }
-  inline void SetDirty(bool dirt) { m_Dirty = dirt; }
-  inline bool IsDirty() { return m_Dirty; }
+  inline void set_render(bool render) { m_render = render; }
+  inline bool get_ready_status() { return m_ready; }
+  inline glm::vec3 &get_pos() { return m_chunk_pos; }
+  inline uvec &get_data() { return m_chunk_data; }
+  inline void set_dirty(bool dirt) { m_dirty = dirt; }
+  inline bool is_dirty() { return m_dirty; }
 
-  void SetBlock(int idx, unsigned int blockType);
-  void MakeChunkData(int x, int y, int z, int chunkSize,
-                     std::vector<unsigned int> *chunkData);
-
-private:
-  void RemakeChunk();
-  void Reset();
+  void set_block(int idx, unsigned int block_type);
+  void make_chunk_data(int x, int y, int z, int chunk_size,
+                     std::vector<unsigned int> *chunk_data);
 
 private:
-  uvec m_ChunkData;
-  glm::vec3 m_ChunkPos;
-  bool m_Ready;
-  bool m_Render;
-  bool m_Dirty = false;
-  std::atomic<bool> m_Generated;
+  void remake_chunk();
+  void reset();
 
-  GLuint m_VAO, m_VBO, m_EBO;
+private:
+  uvec m_chunk_data;
+  glm::vec3 m_chunk_pos;
+  bool m_ready;
+  bool m_render;
+  bool m_dirty = false;
+  std::atomic<bool> m_generated;
 
-  unsigned int m_NumTriangles;
-  glm::vec3 m_WorldPos;
+  GLuint m_vao, m_vbo, m_ebo;
 
-  std::vector<Vertex> m_Vertices;
-  uvec m_Indices;
+  unsigned int m_num_triangles;
+  glm::vec3 m_world_pos;
+
+  std::vector<Vertex> m_vertices;
+  uvec m_indices;
 };

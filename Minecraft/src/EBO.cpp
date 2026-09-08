@@ -7,16 +7,16 @@
 EBO::EBO()
 {
 	//
-	// 	glGenBuffers(1, &m_ID);
-	// 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
-	// 	GlCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(BaseBlockIndices) * CHUNK_SIZE * CHUNK_SIZE * MAX_LEVELS /2 , nullptr , GL_DYNAMIC_DRAW));
+	// 	glGenBuffers(1, &m_id);
+	// 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
+	// 	GlCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(BaseBlockIndices) * chunk_size * chunk_size * MAX_LEVELS /2 , nullptr , GL_DYNAMIC_DRAW));
 	//
 }
 
 //
-// void EBO::LoadBuffer(indexCoords* indices, GLuint numIndices)
+// void EBO::load_buffer(indexCoords* indices, GLuint numIndices)
 // {
-// // 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
+// // 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 // // 	GlCall(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(indexCoords) * numIndices , indices));
 //
 // }
@@ -24,17 +24,17 @@ EBO::EBO()
 // Deletes the EBO
 EBO::~EBO()
 {
-	glDeleteBuffers(1, &m_ID);
+	glDeleteBuffers(1, &m_id);
 }
 
 // Binds the EBO
-void EBO::Bind() const
+void EBO::bind() const
 {
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 }
 
 // Unbinds the EBO
-void EBO::Unbind() const
+void EBO::unbind() const
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

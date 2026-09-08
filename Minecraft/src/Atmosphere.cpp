@@ -1,32 +1,48 @@
 #include "Atmosphere.h"
 #include "Camera.h"
 
-void Atmosphere::add_light(const glm::vec3 &point) {
-  if (m_point_lights.size() >= MAX_POINT_LIGHTS)
+void Atmosphere::add_light(const glm::vec3 &point, const glm::vec3 &color) {
+  if (m_point_lights.count >= PointLights::max_point_lights)
     return;
 
-  m_point_lights.emplace_back(point);
+  const size_t idx = m_point_lights.count++;
+  m_point_lights.positions[idx] = point;
+  m_point_lights.colors[idx] = color;
 }
 
 // maybe dependency inject shader?
-void Atmosphere::update(Shader *shader) {
-  // TODO: update sun pos over dt
+void Atmosphere::update(Shader *shader, float dt) {
 
-  const Camera &cam = Camera::GetCamera();
+  m_sun_theta += dt * m_sun_speed;
 
-  shader->Bind();
+  constexpr float full_circle = glm::two_pi<float>();
+
+  if (m_sun_theta > full_circle) {
+    m_sun_theta -= full_circle;
+  }
+
+  m_sun_dir = glm::vec3(glm::cos(m_sun_theta), -glm::sin(m_sun_theta), 0.0f);
+
+  const Camera &cam = Camera::get_camera();
+
+  shader->bind();
 
   // these uniforms are somewhat static but can add sliders
-  shader->SetUniform1f("uAmbientStrength", m_ambient_strength);
-  shader->SetUniform1f("uSpecularStrength", m_specular_strength);
-  shader->SetUniform1f("uShininess", m_shininess);
+  shader->set_uniform1f("uAmbientStrength", m_ambient_strength);
+  shader->set_uniform1f("uSpecularStrength", m_specular_strength);
+  shader->set_uniform1f("uShininess", m_shininess);
 
   // Tell the shader how much of the fixed-size GLSL array is valid.
-  shader->SetUniform1i("uPointLightCount",
-                       static_cast<int>(m_point_lights.size()));
-  shader->SetUniformVec3Array("uPointLightPositions", m_point_lights);
+  shader->set_uniform1i("uPointLightCount",
+                       static_cast<int>(m_point_lights.count));
+  shader->set_uniform_vec3_array("uPointLightPositions",
+                              &m_point_lights.positions.data()->x,
+                              m_point_lights.count);
+  shader->set_uniform_vec3_array("uPointLightColors",
+                              &m_point_lights.colors.data()->r,
+                              m_point_lights.count);
 
-  shader->SetUniformVec3f("uCamPos", cam.GetPos());
+  shader->set_uniform_vec3f("uCamPos", cam.get_pos());
 }
 
 void render(Shader *shader) {

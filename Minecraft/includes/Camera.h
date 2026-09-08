@@ -8,58 +8,58 @@
 
 class Camera {
 public:
-  glm::mat4 CalcViewMatrix() const;
+  glm::mat4 calc_view_matrix() const;
 
-  inline const glm::vec3 &GetPos() const { return m_Position; }
-  inline const glm::mat4 &GetProjMat() const { return m_ProjectionMat; }
-  inline const float GetZoom() const { return m_Zoom; }
-  inline const glm::vec3 &GetOrientation() const { return m_Orientation; }
+  inline const glm::vec3 &get_pos() const { return m_position; }
+  inline const glm::mat4 &get_proj_mat() const { return m_projection_mat; }
+  inline const float get_zoom() const { return m_zoom; }
+  inline const glm::vec3 &get_orientation() const { return m_orientation; }
 
-  void DispatchKeyboardEvent(Direction direction, float deltaTime);
-  void DispatchMouseMoveEvent(float xrot, float yrot);
-  void DispatchMouseScrollEvent(float scroll);
+  void dispatch_keyboard_event(Direction direction, float delta_time);
+  void dispatch_mouse_move_event(float xrot, float yrot);
+  void dispatch_mouse_scroll_event(float scroll);
 
-  void OnUpdate(float deltaTime);
+  void on_update(float delta_time);
 
   // singleton for camera, only one camera for minecraft
-  static Camera &GetCamera() {
-    static Camera cam(glm::vec3(0.0f, 25.0f, 0.0f), SCREEN_WIDTH, SCREEN_HEIGHT,
+  static Camera &get_camera() {
+    static Camera cam(glm::vec3(0.0f, 25.0f, 0.0f), screen_width, screen_height,
                       45.f, 0.1f, 100.f);
     return cam;
   }
 
 private:
-  Camera(glm::vec3 position, int width, int height, float fov, float nearPlane,
-         float farPlane);
+  Camera(glm::vec3 position, int width, int height, float fov, float near_plane,
+         float far_plane);
 
   // projection stuff
-  glm::mat4 m_MVP;
-  glm::mat4 m_ProjectionMat;
+  glm::mat4 m_mvp;
+  glm::mat4 m_projection_mat;
 
   // not adding model mat, will define in maybe super class with multiplayer
   //  the model mats will define the offset of the player models for each player
   //  in game
 
   // camera attribs
-  glm::vec3 m_Position;
-  glm::vec3 m_PositionUpdate;
-  glm::vec3 m_PrevPosition;
+  glm::vec3 m_position;
+  glm::vec3 m_position_update;
+  glm::vec3 m_prev_position;
 
-  glm::vec3 m_Orientation;
-  glm::vec3 m_Right;
-  glm::vec3 m_Up;
+  glm::vec3 m_orientation;
+  glm::vec3 m_right;
+  glm::vec3 m_up;
 
   // rotation angles
-  float m_Yaw;
-  float m_Pitch;
+  float m_yaw;
+  float m_pitch;
 
-  unsigned int m_Width;
-  unsigned int m_Height;
+  unsigned int m_width;
+  unsigned int m_height;
 
-  float m_Speed;
-  float m_Velocity;
-  float m_Sensitivity;
-  float m_Zoom;
+  float m_speed;
+  float m_velocity;
+  float m_sensitivity;
+  float m_zoom;
 
-  void updateCameraVectors();
+  void update_camera_vectors();
 };

@@ -2,4 +2,4 @@
 
 Self::Self(const glm::vec3 &pos) : PlayerObj(pos) {}
 
-void Self::OnUpdate(float deltaTime) {}
+void Self::on_update(float delta_time) {}

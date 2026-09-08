@@ -18,21 +18,21 @@ namespace Thread {
 
 	class ThreadPool {
 	public:
-		ThreadPool(size_t numThreads);
+		ThreadPool(size_t num_threads);
 		~ThreadPool();
 
 		void stop();
-		void enqueueTask(Task);
+		void enqueue_task(Task);
 
 	private:
 
-		void workerFunction();
+		void worker_function();
 
-		std::vector<std::thread> m_Workers;
-		std::queue<Task> m_Tasks;
-		std::mutex m_QueueMutex;
-		std::condition_variable m_Condition;
-		bool m_StopPool;
+		std::vector<std::thread> m_workers;
+		std::queue<Task> m_tasks;
+		std::mutex m_queue_mutex;
+		std::condition_variable m_condition;
+		bool m_stop_pool;
 
 	};
 

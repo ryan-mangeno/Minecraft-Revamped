@@ -1,9 +1,9 @@
 #include "Object.h"
 
 
-std::vector<GLuint> Object::m_VBOS;
-std::vector<GLuint> Object::m_VAOS;
-std::vector<GLuint> Object::m_EBOS;
+std::vector<GLuint> Object::m_vbos;
+std::vector<GLuint> Object::m_vaos;
+std::vector<GLuint> Object::m_ebos;
 
 Object::Object()
 {
@@ -11,9 +11,9 @@ Object::Object()
 }
 
 
-void Object::DestroyObjects()
+void Object::destroy_objects()
 {
-	for (auto& it : m_VAOS)
+	for (auto& it : m_vaos)
 	{
 		glDeleteVertexArrays(1, &it);
 	}

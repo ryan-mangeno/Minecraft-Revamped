@@ -9,25 +9,25 @@ namespace ModelLoader {
 
 namespace {
 
-GLenum textureFormat(int componentCount) {
-  if (componentCount == 1)
+GLenum texture_format(int component_count) {
+  if (component_count == 1)
     return GL_RED;
-  if (componentCount == 3)
+  if (component_count == 3)
     return GL_RGB;
-  if (componentCount == 4)
+  if (component_count == 4)
     return GL_RGBA;
   return 0;
 }
 
-GLuint uploadTexture(const unsigned char *data, int width, int height,
-                     int componentCount) {
-  const GLenum format = textureFormat(componentCount);
+GLuint upload_texture(const unsigned char *data, int width, int height,
+                     int component_count) {
+  const GLenum format = texture_format(component_count);
   if (!data || format == 0)
     return 0;
 
-  GLuint textureID = 0;
-  glGenTextures(1, &textureID);
-  glBindTexture(GL_TEXTURE_2D, textureID);
+  GLuint texture_id = 0;
+  glGenTextures(1, &texture_id);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
   glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
                GL_UNSIGNED_BYTE, data);
   glGenerateMipmap(GL_TEXTURE_2D);
@@ -36,10 +36,10 @@ GLuint uploadTexture(const unsigned char *data, int width, int height,
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_LINEAR_MIPMAP_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  return textureID;
+  return texture_id;
 }
 
-GLuint textureFromEmbedded(const aiTexture *embedded) {
+GLuint texture_from_embedded(const aiTexture *embedded) {
   if (!embedded || embedded->mHeight != 0) {
     MC_ERROR("Only compressed embedded model textures are supported for now");
     return 0;
@@ -47,51 +47,51 @@ GLuint textureFromEmbedded(const aiTexture *embedded) {
 
   int width = 0;
   int height = 0;
-  int componentCount = 0;
+  int component_count = 0;
   unsigned char *data = stbi_load_from_memory(
       reinterpret_cast<const stbi_uc *>(embedded->pcData),
-      static_cast<int>(embedded->mWidth), &width, &height, &componentCount, 0);
+      static_cast<int>(embedded->mWidth), &width, &height, &component_count, 0);
 
-  const GLuint textureID = uploadTexture(data, width, height, componentCount);
+  const GLuint texture_id = upload_texture(data, width, height, component_count);
   stbi_image_free(data);
-  return textureID;
+  return texture_id;
 }
 
 } // namespace
 
-GLint TextureFromFile(const char *fname, const std::string &directory) {
+GLint texture_from_file(const char *fname, const std::string &directory) {
   std::string filename(fname);
   filename = directory + '/' + filename;
-  int width, height, nrComponents;
+  int width, height, nr_components;
   unsigned char *data =
-      stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
-  GLuint textureID = 0;
+      stbi_load(filename.c_str(), &width, &height, &nr_components, 0);
+  GLuint texture_id = 0;
   if (data) {
-    textureID = uploadTexture(data, width, height, nrComponents);
+    texture_id = upload_texture(data, width, height, nr_components);
     stbi_image_free(data);
   } else {
     std::cout << "Texture failed to load at path: " << filename << std::endl;
     stbi_image_free(data);
   }
 
-  return textureID;
+  return texture_id;
 }
 
-Model::Model(const std::string &fname) : filePath(fname) {}
+Model::Model(const std::string &fname) : file_path(fname) {}
 
-void Model::Init() {
-  loadModel(filePath);
-  MC_DEBUG("Loading {} model", filePath.c_str());
+void Model::init() {
+  load_model(file_path);
+  MC_DEBUG("Loading {} model", file_path.c_str());
 }
 
-void Model::Render(Shader *shader) {
+void Model::render(Shader *shader) {
 
   for (int i = 0; i < meshes.size(); i++) {
-    meshes[i].Render(shader);
+    meshes[i].render(shader);
   }
 }
 
-void Model::loadModel(const std::string &path) {
+void Model::load_model(const std::string &path) {
   // read file via ASSIMP
   Assimp::Importer importer;
   const aiScene *scene = importer.ReadFile(
@@ -109,10 +109,10 @@ void Model::loadModel(const std::string &path) {
   directory = path.substr(0, path.find_last_of('/'));
 
   // process ASSIMP's root node recursively
-  processNode(scene->mRootNode, scene);
+  process_node(scene->mRootNode, scene);
 }
 
-void Model::processNode(aiNode *node, const aiScene *scene) {
+void Model::process_node(aiNode *node, const aiScene *scene) {
 
   // process each mesh located at the current node
   for (unsigned int i = 0; i < node->mNumMeshes; i++) {
@@ -120,16 +120,16 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
     // scene. the scene contains all the data, node is just to keep stuff
     // organized (like relations between nodes).
     aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-    meshes.push_back(processMesh(mesh, scene));
+    meshes.push_back(process_mesh(mesh, scene));
   }
   // after we've processed all of the meshes (if any) we then recursively
   // process each of the children nodes
   for (unsigned int i = 0; i < node->mNumChildren; i++) {
-    processNode(node->mChildren[i], scene);
+    process_node(node->mChildren[i], scene);
   }
 }
 
-ModelLoader::Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
+ModelLoader::Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene) {
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
   std::vector<ModelLoader::Texture> textures;
@@ -178,20 +178,20 @@ ModelLoader::Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
 
   aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
 
-  std::vector<ModelLoader::Texture> diffuseMaps = loadMaterialTextures(
+  std::vector<ModelLoader::Texture> diffuse_maps = load_material_textures(
       material, aiTextureType_DIFFUSE, "texture_diffuse", scene);
-  textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+  textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
 
-  std::vector<ModelLoader::Texture> specularMaps = loadMaterialTextures(
+  std::vector<ModelLoader::Texture> specular_maps = load_material_textures(
       material, aiTextureType_SPECULAR, "texture_specular", scene);
-  textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+  textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
 
   return ModelLoader::Mesh(vertices, indices, textures);
 }
 
 std::vector<ModelLoader::Texture>
-Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
-                            const std::string &typeName, const aiScene *scene) {
+Model::load_material_textures(aiMaterial *mat, aiTextureType type,
+                            const std::string &type_name, const aiScene *scene) {
   std::vector<ModelLoader::Texture> textures;
 
   for (GLuint i = 0; i < mat->GetTextureCount(type); i++) {
@@ -216,10 +216,10 @@ Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
       ModelLoader::Texture texture;
 
       if (const aiTexture *embedded = scene->GetEmbeddedTexture(str.C_Str()))
-        texture.id = textureFromEmbedded(embedded);
+        texture.id = texture_from_embedded(embedded);
       else
-        texture.id = TextureFromFile(str.C_Str(), directory);
-      texture.type = typeName;
+        texture.id = texture_from_file(str.C_Str(), directory);
+      texture.type = type_name;
       texture.path = str;
       textures.push_back(texture);
 

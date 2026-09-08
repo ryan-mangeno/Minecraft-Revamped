@@ -3,81 +3,81 @@
 #include "AppAttribs.h"
 #include "Ray.h"
 
-static AppAttribs &appAttribs = AppAttribs::GetAppAttribs();
-Camera &camera = Camera::GetCamera();
+static AppAttribs &app_attribs = AppAttribs::get_app_attribs();
+Camera &camera = Camera::get_camera();
 
-void processInput(GLFWwindow* window)
+void process_input(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
-		if (appAttribs.GetEscaped())
+		if (app_attribs.get_escaped())
 			return;
 
-		appAttribs.SetEscaped(true);
-		appAttribs.InvertMenuModeStatus();
-		glfwSetInputMode(window, GLFW_CURSOR, appAttribs.GetMenuMode() ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-		appAttribs.SetFirstMouse(true);
+		app_attribs.set_escaped(true);
+		app_attribs.invert_menu_mode_status();
+		glfwSetInputMode(window, GLFW_CURSOR, app_attribs.get_menu_mode() ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+		app_attribs.set_first_mouse(true);
 
 
 	}
 	else
-		appAttribs.SetEscaped(false);
+		app_attribs.set_escaped(false);
 
-	double deltaTime = appAttribs.GetDeltaTime();
+	double delta_time = app_attribs.get_delta_time();
 
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(NORTH, deltaTime);
+		camera.dispatch_keyboard_event(NORTH, delta_time);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(SOUTH, deltaTime);
+		camera.dispatch_keyboard_event(SOUTH, delta_time);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(WEST, deltaTime);
+		camera.dispatch_keyboard_event(WEST, delta_time);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(EAST, deltaTime);
+		camera.dispatch_keyboard_event(EAST, delta_time);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(UP, deltaTime);
+		camera.dispatch_keyboard_event(UP, delta_time);
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		camera.DispatchKeyboardEvent(DOWN, deltaTime);
+		camera.dispatch_keyboard_event(DOWN, delta_time);
 }
 
-void CallBackStates::framebufferSizeCallback(GLFWwindow* window, int width, int height)
+void CallBackStates::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	appAttribs.SetFrameBuffSizes(width, height);
+	app_attribs.set_frame_buff_sizes(width, height);
 	glViewport(0, 0, width, height);
 }
 
 
 void CallBackStates::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (appAttribs.GetMenuMode())
+	if (app_attribs.get_menu_mode())
 		return;
 
-	if (appAttribs.GetFirstMouse())
+	if (app_attribs.get_first_mouse())
 	{
-		appAttribs.SetPrevMousePos(xpos, ypos);
-		appAttribs.SetFirstMouse(false);
+		app_attribs.set_prev_mouse_pos(xpos, ypos);
+		app_attribs.set_first_mouse(false);
 	}
 
-	float xoffset = xpos - appAttribs.GetPrevMouseX();
-	float yoffset = -ypos + appAttribs.GetPrevMouseY();
-	appAttribs.SetPrevMousePos(xpos, ypos);
+	float xoffset = xpos - app_attribs.get_prev_mouse_x();
+	float yoffset = -ypos + app_attribs.get_prev_mouse_y();
+	app_attribs.set_prev_mouse_pos(xpos, ypos);
 
-	camera.DispatchMouseMoveEvent(xoffset, yoffset);
+	camera.dispatch_mouse_move_event(xoffset, yoffset);
 }
 
 void CallBackStates::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.DispatchMouseScrollEvent(yoffset);
+	camera.dispatch_mouse_scroll_event(yoffset);
 }
 
 void CallBackStates::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	if (appAttribs.GetMenuMode() == false)
+	if (app_attribs.get_menu_mode() == false)
 	{
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		{
-			Ray r(camera.GetPos());
-			r.Cast(camera.GetOrientation(), 2.f);
+			Ray r(camera.get_pos());
+			r.cast(camera.get_orientation(), 2.f);
 		}
 	}
 }

@@ -8,9 +8,9 @@ class Self : public PlayerObj {
 public:
   Self(const glm::vec3 &pos);
 
-  void OnUpdate(float deltaTime);
+  void on_update(float delta_time);
 
 private:
   // camera is singleton ... might change
-  // Camera m_Camera;
+  // Camera m_camera;
 };

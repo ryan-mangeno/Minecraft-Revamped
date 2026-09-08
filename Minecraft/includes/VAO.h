@@ -8,7 +8,7 @@
 
 class VAO
 {
-	GLuint m_ID;
+	GLuint m_id;
 public:
 
 	// Constructor that generates a VAO ID
@@ -16,13 +16,13 @@ public:
 	~VAO();
 
 	// Links a VBO to the VAO using a certain layout
-	void LinkAttrib(VBO& VBO, GLuint layout, GLuint numComponents, GLenum type, GLsizeiptr stride, void* offset );
+	void link_attrib(VBO& vbo, GLuint layout, GLuint num_components, GLenum type, GLsizeiptr stride, void* offset );
 	// Binds the VAO
-	void Bind() const;
+	void bind() const;
 	// Unbinds the VAO
-	void Unbind() const;
+	void unbind() const;
 
-	inline GLuint GetID() const { return m_ID; };
+	inline GLuint get_id() const { return m_id; };
 
 };
 #endif

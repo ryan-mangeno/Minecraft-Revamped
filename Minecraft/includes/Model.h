@@ -23,32 +23,32 @@
 
 namespace ModelLoader {
 
-GLint TextureFromFile(const char *fname, const std::string &directory);
+GLint texture_from_file(const char *fname, const std::string &directory);
 
 class Model {
 public:
   explicit Model(const std::string &fname);
 
-  void Init();
-  void Render(Shader *shader);
+  void init();
+  void render(Shader *shader);
 
 private:
   std::vector<ModelLoader::Mesh> meshes;
   std::vector<ModelLoader::Texture> textures;
   std::vector<ModelLoader::Texture> textures_loaded;
 
-  std::string filePath;
+  std::string file_path;
   std::string directory;
 
-  void loadModel(const std::string &path);
+  void load_model(const std::string &path);
 
-  void processNode(aiNode *node, const aiScene *scene);
+  void process_node(aiNode *node, const aiScene *scene);
 
-  ModelLoader::Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+  ModelLoader::Mesh process_mesh(aiMesh *mesh, const aiScene *scene);
 
   std::vector<ModelLoader::Texture>
-  loadMaterialTextures(aiMaterial *mat, aiTextureType type,
-                       const std::string &typeName, const aiScene *scene);
+  load_material_textures(aiMaterial *mat, aiTextureType type,
+                       const std::string &type_name, const aiScene *scene);
 };
 
 } // namespace ModelLoader

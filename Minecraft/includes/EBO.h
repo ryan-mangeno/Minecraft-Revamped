@@ -10,7 +10,7 @@ class EBO
 {
 private:
 	// ID reference of Elements Buffer Object
-	GLuint m_ID;
+	GLuint m_id;
 
 
 public:
@@ -18,12 +18,12 @@ public:
 	template <typename T>
 	EBO(const T indices[], GLsizei size)
 	{
-		glGenBuffers(1, &m_ID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
+		glGenBuffers(1, &m_id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		GlCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW));
 	}
 
-	//void LoadBuffer(indexCoords* indices, GLuint numIndices);
+	//void load_buffer(indexCoords* indices, GLuint numIndices);
 
 	EBO();
 
@@ -32,11 +32,11 @@ public:
 	~EBO();
 
 	// Binds the EBO
-	void Bind() const;
+	void bind() const;
 	// Unbinds the EBO
-	void Unbind() const;
+	void unbind() const;
 
-	inline GLuint GetID() { return m_ID; };
+	inline GLuint get_id() { return m_id; };
 
 };
 

@@ -27,11 +27,11 @@ class Texture
 
 private:
 
-	GLuint m_ID;
-	std::string m_FilePath;
-	unsigned char* m_ImgBytes;
-	int m_Width, m_Height, m_BPP, m_SpriteSize;
-	static std::array<Texture, 4> m_Textures;
+	GLuint m_id;
+	std::string m_file_path;
+	unsigned char* m_img_bytes;
+	int m_width, m_height, m_bpp, m_sprite_size;
+	static std::array<Texture, 4> m_textures;
 
 	Texture(const std::string& path, int);
 
@@ -42,18 +42,18 @@ public:
 	Texture() = default;
 
 
-	static void InitTextures();
-	static void DeleteTextures();
+	static void init_textures();
+	static void delete_textures();
 
-	void Bind(GLuint slot = 0) const;
-	void Unbind() const;
+	void bind(GLuint slot = 0) const;
+	void unbind() const;
 
-	inline int getWidth() const { return m_Width; }
-	inline int getHeight() const { return m_Height; }
-	inline int getSpriteSize() const { return m_SpriteSize; };
-	static Texture& GetTexture(int index);
+	inline int get_width() const { return m_width; }
+	inline int get_height() const { return m_height; }
+	inline int get_sprite_size() const { return m_sprite_size; };
+	static Texture& get_texture(int index);
 
-	inline GLuint& getTextureID() { return m_ID; };
+	inline GLuint& get_texture_id() { return m_id; };
 
 };
 

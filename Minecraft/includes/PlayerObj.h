@@ -11,16 +11,16 @@ public:
   PlayerObj();
   PlayerObj(const glm::vec3 &pos);
 
-  static ModelLoader::Model m_PlayerModel;
+  static ModelLoader::Model m_player_model;
 
 protected:
-  glm::vec3 m_Position;
-  glm::vec3 m_Orientation;
+  glm::vec3 m_position;
+  glm::vec3 m_orientation;
 
   // might remove since bounding box is based off of player width and height
-  AABB m_Collider;
+  AABB m_collider;
 
-  float m_Rotation;
+  float m_rotation;
 };
 
 #endif

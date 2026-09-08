@@ -2,17 +2,17 @@
 
 
 // this kind of aabb can be used with radius to make it act like a cylindrical collider
-AABB::AABB(const glm::vec3& ColliderMinCornerPos, float width, float height)
-	: minX(ColliderMinCornerPos.x), minY(ColliderMinCornerPos.y), minZ(ColliderMinCornerPos.z),
-	  maxX(ColliderMinCornerPos.x + width), maxY(ColliderMinCornerPos.y + height), maxZ(ColliderMinCornerPos.z + width)
+AABB::AABB(const glm::vec3& collider_min_corner_pos, float width, float height)
+	: min_x(collider_min_corner_pos.x), min_y(collider_min_corner_pos.y), min_z(collider_min_corner_pos.z),
+	  max_x(collider_min_corner_pos.x + width), max_y(collider_min_corner_pos.y + height), max_z(collider_min_corner_pos.z + width)
 {
 }
 
 bool AABB::collides(const glm::vec3& point) const
 {
-	if(point.x >= minX && point.x <= maxX &&
-	   point.y >= minY && point.y <= maxY &&
-       point.z >= minZ && point.z <= maxZ) {
+	if(point.x >= min_x && point.x <= max_x &&
+	   point.y >= min_y && point.y <= max_y &&
+       point.z >= min_z && point.z <= max_z) {
 		return true;
 	}
 
@@ -29,9 +29,9 @@ bool AABB::collides(float x, float y, float z) const
 bool AABB::collides(const AABB& collider) const
 {
 	// Check for overlap on all three axes
-	if (maxX < collider.minX || minX > collider.maxX) return false;
-	if (maxY < collider.minY || minY > collider.maxY) return false;
-	if (maxZ < collider.minZ || minZ > collider.maxZ) return false;
+	if (max_x < collider.min_x || min_x > collider.max_x) return false;
+	if (max_y < collider.min_y || min_y > collider.max_y) return false;
+	if (max_z < collider.min_z || min_z > collider.max_z) return false;
 
 	// If none of the above conditions are true, the boxes are colliding
 	return true;

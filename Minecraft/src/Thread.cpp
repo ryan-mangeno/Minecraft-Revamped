@@ -2,12 +2,12 @@
 
 namespace Thread {
 
-	ThreadPool::ThreadPool(size_t numThreads)
-		: m_StopPool(false)
+	ThreadPool::ThreadPool(size_t num_threads)
+		: m_stop_pool(false)
 	{
 
-		for (size_t i = 0; i < numThreads; ++i) {
-			m_Workers.emplace_back(&ThreadPool::workerFunction, this);
+		for (size_t i = 0; i < num_threads; ++i) {
+			m_workers.emplace_back(&ThreadPool::worker_function, this);
 		}
 
 	}
@@ -17,50 +17,50 @@ namespace Thread {
 		stop();
 	}
 
-	void ThreadPool::enqueueTask(Task task)
+	void ThreadPool::enqueue_task(Task task)
 	{
 		{
-			std::unique_lock<std::mutex> lock(m_QueueMutex);
-			m_Tasks.push(task);
+			std::unique_lock<std::mutex> lock(m_queue_mutex);
+			m_tasks.push(task);
 		}
-		m_Condition.notify_one();
+		m_condition.notify_one();
 	}
 
 	void ThreadPool::stop()
 	{
 		{
-			std::unique_lock<std::mutex> lock(m_QueueMutex);
-			m_StopPool = true;
+			std::unique_lock<std::mutex> lock(m_queue_mutex);
+			m_stop_pool = true;
 		}
 
-		m_Condition.notify_all(); // Notify all workers to stop
+		m_condition.notify_all(); // Notify all workers to stop
 
 
-		for (std::thread& worker : m_Workers) {
+		for (std::thread& worker : m_workers) {
 			worker.join();
 
 		}
 	}
 
 
-	void ThreadPool::workerFunction()
+	void ThreadPool::worker_function()
 	{
 		while (true) {
 			Task t;
 
 			{
-				std::unique_lock<std::mutex> lock(m_QueueMutex);
+				std::unique_lock<std::mutex> lock(m_queue_mutex);
 
 				// wait for a task or the stop signal
-				m_Condition.wait(lock, [this] {
-					return this->m_StopPool || !this->m_Tasks.empty();
+				m_condition.wait(lock, [this] {
+					return this->m_stop_pool || !this->m_tasks.empty();
 					});
 
-				if (this->m_StopPool && this->m_Tasks.empty())
+				if (this->m_stop_pool && this->m_tasks.empty())
 					return;
 
-				t = std::move(this->m_Tasks.front());
-				this->m_Tasks.pop();
+				t = std::move(this->m_tasks.front());
+				this->m_tasks.pop();
 			}
 
 			// execute the task outside the lock to minimize lock duration

@@ -31,12 +31,12 @@ public:
   Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
        std::vector<Texture> textures);
 
-  void Render(Shader *shader);
+  void render(Shader *shader);
 
 private:
-  GLuint VAO, VBO, EBO;
+  GLuint vao, vbo, ebo;
 
-  void SetupMesh();
+  void setup_mesh();
 };
 
 } // namespace ModelLoader

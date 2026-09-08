@@ -6,15 +6,15 @@
 #include <queue>
 #include <unordered_set>
 
-Ray::Ray(const glm::vec3 &start) : m_StartPosition(start) {}
+Ray::Ray(const glm::vec3 &start) : m_start_position(start) {}
 
-static bool RayAABBIntersect(const glm::vec3 &rayOrigin,
-                             const glm::vec3 &rayDir, const glm::vec3 &aabbMin,
-                             const glm::vec3 &aabbMax, float &tmin,
+static bool ray_aabb_intersect(const glm::vec3 &ray_origin,
+                             const glm::vec3 &ray_dir, const glm::vec3 &aabb_min,
+                             const glm::vec3 &aabb_max, float &tmin,
                              float &tmax) {
-  glm::vec3 invDir = 1.0f / rayDir;
-  glm::vec3 t0 = (aabbMin - rayOrigin) * invDir;
-  glm::vec3 t1 = (aabbMax - rayOrigin) * invDir;
+  glm::vec3 inv_dir = 1.0f / ray_dir;
+  glm::vec3 t0 = (aabb_min - ray_origin) * inv_dir;
+  glm::vec3 t1 = (aabb_max - ray_origin) * inv_dir;
 
   tmin = std::max(std::max(std::min(t0.x, t1.x), std::min(t0.y, t1.y)),
                   std::min(t0.z, t1.z));
@@ -26,9 +26,9 @@ static bool RayAABBIntersect(const glm::vec3 &rayOrigin,
 
 // floor-division for chunk coords - plain '/' truncates toward zero and
 // puts negative-space blocks in the wrong chunk (e.g. -1 / 16 == 0, but
-// block -1 belongs to chunk -1). Matches the std::floor(x/16) BroadPhase
+// block -1 belongs to chunk -1). Matches the std::floor(x/16) broad_phase
 // already uses in Phys.cpp.
-static inline int FloorDiv(int a, int b) {
+static inline int floor_div(int a, int b) {
   return (a >= 0) ? (a / b) : -(((-a) + b - 1) / b);
 }
 
@@ -40,19 +40,19 @@ struct BlockHit {
   bool operator>(const BlockHit &other) const { return t > other.t; }
 };
 
-bool Ray::Cast(const glm::vec3 &direction, float maxDist) {
+bool Ray::cast(const glm::vec3 &direction, float max_dist) {
   glm::vec3 dir = glm::normalize(direction);
-  glm::vec3 start = m_StartPosition;
-  World &world = World::GetWorld();
+  glm::vec3 start = m_start_position;
+  World &world = World::get_world();
 
-  auto hashVec = [](const glm::ivec3 &v) {
+  auto hash_vec = [](const glm::ivec3 &v) {
     return std::hash<int>()(v.x) ^ std::hash<int>()(v.y << 1) ^
            std::hash<int>()(v.z << 2);
   };
 
   std::priority_queue<BlockHit, std::vector<BlockHit>, std::greater<BlockHit>>
       q;
-  std::unordered_set<glm::ivec3, decltype(hashVec)> visited(0, hashVec);
+  std::unordered_set<glm::ivec3, decltype(hash_vec)> visited(0, hash_vec);
 
   glm::ivec3 current = glm::floor(start);
   q.push({current, 0.0f});
@@ -61,41 +61,41 @@ bool Ray::Cast(const glm::vec3 &direction, float maxDist) {
   while (!q.empty()) {
     BlockHit block = q.top();
     q.pop();
-    if (block.t > maxDist)
+    if (block.t > max_dist)
       break;
 
     // Check the block
-    int cx = FloorDiv(block.pos.x, CHUNK_SIZE);
-    int cy = FloorDiv(block.pos.y, CHUNK_SIZE);
-    int cz = FloorDiv(block.pos.z, CHUNK_SIZE);
+    int cx = floor_div(block.pos.x, chunk_size);
+    int cy = floor_div(block.pos.y, chunk_size);
+    int cz = floor_div(block.pos.z, chunk_size);
 
-    uvec &chunkData = world.GetChunkData(cx, cy, cz);
-    Chunk *chunk = world.GetChunk(cx, cy, cz);
+    uvec &chunk_data = world.get_chunk_data(cx, cy, cz);
+    Chunk *chunk = world.get_chunk(cx, cy, cz);
 
     // skip unloaded/ungenerated chunks instead of throwing (.at()) or
-    // null-dereferencing chunk->SetBlock below - still fall through to
+    // null-dereferencing chunk->set_block below - still fall through to
     // neighbor expansion so the ray keeps traveling past this gap
-    bool chunkReady = chunk != nullptr &&
-                       chunkData.size() == CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+    bool chunk_ready = chunk != nullptr &&
+                       chunk_data.size() == chunk_size * chunk_size * chunk_size;
 
-    if (chunkReady) {
-      int lx = block.pos.x % CHUNK_SIZE;
-      int ly = block.pos.y % CHUNK_SIZE;
-      int lz = block.pos.z % CHUNK_SIZE;
+    if (chunk_ready) {
+      int lx = block.pos.x % chunk_size;
+      int ly = block.pos.y % chunk_size;
+      int lz = block.pos.z % chunk_size;
 
       if (lx < 0)
-        lx += CHUNK_SIZE;
+        lx += chunk_size;
       if (ly < 0)
-        ly += CHUNK_SIZE;
+        ly += chunk_size;
       if (lz < 0)
-        lz += CHUNK_SIZE;
+        lz += chunk_size;
 
-      int index = lx * CHUNK_SIZE * CHUNK_SIZE + lz * CHUNK_SIZE + ly;
+      int index = lx * chunk_size * chunk_size + lz * chunk_size + ly;
 
-      if (chunkData[index] != Blocks::AIR) {
-        chunk->SetBlock(index, Blocks::AIR); // remove the block
-        chunk->SetDirty(true);               // mark the chunk as dirty
-        world.MarkNeighbors(lx, ly, lz, cx, cy, cz);
+      if (chunk_data[index] != Blocks::AIR) {
+        chunk->set_block(index, Blocks::AIR); // remove the block
+        chunk->set_dirty(true);               // mark the chunk as dirty
+        world.mark_neighbors(lx, ly, lz, cx, cy, cz);
 
         std::cout << "hit" << block.pos.x << " " << block.pos.y << " "
                   << block.pos.z << std::endl;
@@ -112,11 +112,11 @@ bool Ray::Cast(const glm::vec3 &direction, float maxDist) {
             continue;
 
           // compute t (entry distance into this block)
-          glm::vec3 minBound = glm::vec3(neighbor);
-          glm::vec3 maxBound = minBound + glm::vec3(1.0f);
-          float tNear, tFar;
-          if (RayAABBIntersect(start, dir, minBound, maxBound, tNear, tFar)) {
-            q.push({neighbor, tNear});
+          glm::vec3 min_bound = glm::vec3(neighbor);
+          glm::vec3 max_bound = min_bound + glm::vec3(1.0f);
+          float t_near, t_far;
+          if (ray_aabb_intersect(start, dir, min_bound, max_bound, t_near, t_far)) {
+            q.push({neighbor, t_near});
             visited.insert(neighbor);
           }
         }

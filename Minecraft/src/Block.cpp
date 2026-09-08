@@ -2,77 +2,77 @@
 
 
 
-Block::Block(uchar minX, uchar minY, uchar maxX, uchar maxY)
+Block::Block(uchar min_x, uchar min_y, uchar max_x, uchar max_y)
 {
-	topMinX = minX;
-	topMinY = minY;
-	topMaxX = maxX;
-	topMaxY = maxY;
+	top_min_x = min_x;
+	top_min_y = min_y;
+	top_max_x = max_x;
+	top_max_y = max_y;
 
-	bottomMinX = minX;
-	bottomMinY = minY;
-	bottomMaxX = maxX;
-	bottomMaxY = maxY;
+	bottom_min_x = min_x;
+	bottom_min_y = min_y;
+	bottom_max_x = max_x;
+	bottom_max_y = max_y;
 
-	sideMinX = minX;
-	sideMinY = minY;
-	sideMaxX = maxX;
-	sideMaxY = maxY;
+	side_min_x = min_x;
+	side_min_y = min_y;
+	side_max_x = max_x;
+	side_max_y = max_y;
 }
 
-Block::Block(uchar minX, uchar minY, uchar maxX, uchar maxY, uchar spriteSize)
+Block::Block(uchar min_x, uchar min_y, uchar max_x, uchar max_y, uchar sprite_size)
 {
-	topMinX = minX * spriteSize;
-	topMinY = minY * spriteSize;
-	topMaxX = maxX * spriteSize;
-	topMaxY = maxY * spriteSize;
+	top_min_x = min_x * sprite_size;
+	top_min_y = min_y * sprite_size;
+	top_max_x = max_x * sprite_size;
+	top_max_y = max_y * sprite_size;
 
-	bottomMinX = minX * spriteSize;
-	bottomMinY = minY * spriteSize;
-	bottomMaxX = maxX * spriteSize;
-	bottomMaxY = maxY * spriteSize;
+	bottom_min_x = min_x * sprite_size;
+	bottom_min_y = min_y * sprite_size;
+	bottom_max_x = max_x * sprite_size;
+	bottom_max_y = max_y * sprite_size;
 
-	sideMinX = minX * spriteSize;
-	sideMinY = minY * spriteSize;
-	sideMaxX = maxX * spriteSize;
-	sideMaxY = maxY * spriteSize;
+	side_min_x = min_x * sprite_size;
+	side_min_y = min_y * sprite_size;
+	side_max_x = max_x * sprite_size;
+	side_max_y = max_y * sprite_size;
 
 }
 
-Block::Block(uchar topMinX, uchar topMinY, uchar topMaxX, uchar topMaxY,
-	uchar bottomMinX, uchar bottomMinY, uchar bottomMaxX, uchar bottomMaxY,
-	uchar sideMinX, uchar sideMinY, uchar sideMaxX, uchar sideMaxY)
+Block::Block(uchar top_min_x, uchar top_min_y, uchar top_max_x, uchar top_max_y,
+	uchar bottom_min_x, uchar bottom_min_y, uchar bottom_max_x, uchar bottom_max_y,
+	uchar side_min_x, uchar side_min_y, uchar side_max_x, uchar side_max_y)
 {
-	this->topMinX = topMinX;
-	this->topMinY = topMinY;
-	this->topMaxX = topMaxX;
-	this->topMaxY = topMaxY;
+	this->top_min_x = top_min_x;
+	this->top_min_y = top_min_y;
+	this->top_max_x = top_max_x;
+	this->top_max_y = top_max_y;
 
-	this->bottomMinX = bottomMinX;
-	this->bottomMinY = bottomMinY;
-	this->bottomMaxX = bottomMaxX;
-	this->bottomMaxY = bottomMaxY;
+	this->bottom_min_x = bottom_min_x;
+	this->bottom_min_y = bottom_min_y;
+	this->bottom_max_x = bottom_max_x;
+	this->bottom_max_y = bottom_max_y;
 
-	this->sideMinX = sideMinX;
-	this->sideMinY = sideMinY;
-	this->sideMaxX = sideMaxX;
-	this->sideMaxY = sideMaxY;
+	this->side_min_x = side_min_x;
+	this->side_min_y = side_min_y;
+	this->side_max_x = side_max_x;
+	this->side_max_y = side_max_y;
 }
 
-Block::Block(uchar topMinX, uchar topMinY, uchar topMaxX, uchar topMaxY, uchar bottomMinX, uchar bottomMinY, uchar bottomMaxX, uchar bottomMaxY, uchar sideMinX, uchar sideMinY, uchar sideMaxX, uchar sideMaxY, uchar spriteSize)
+Block::Block(uchar top_min_x, uchar top_min_y, uchar top_max_x, uchar top_max_y, uchar bottom_min_x, uchar bottom_min_y, uchar bottom_max_x, uchar bottom_max_y, uchar side_min_x, uchar side_min_y, uchar side_max_x, uchar side_max_y, uchar sprite_size)
 {
-	this->topMinX = topMinX * spriteSize;
-	this->topMinY = topMinY * spriteSize;
-	this->topMaxX = topMaxX * spriteSize;
-	this->topMaxY = topMaxY * spriteSize;
+	this->top_min_x = top_min_x * sprite_size;
+	this->top_min_y = top_min_y * sprite_size;
+	this->top_max_x = top_max_x * sprite_size;
+	this->top_max_y = top_max_y * sprite_size;
 
-	this->bottomMinX = bottomMinX * spriteSize;
-	this->bottomMinY = bottomMinY * spriteSize;
-	this->bottomMaxX = bottomMaxX * spriteSize;
-	this->bottomMaxY = bottomMaxY * spriteSize;
+	this->bottom_min_x = bottom_min_x * sprite_size;
+	this->bottom_min_y = bottom_min_y * sprite_size;
+	this->bottom_max_x = bottom_max_x * sprite_size;
+	this->bottom_max_y = bottom_max_y * sprite_size;
 
-	this->sideMinX = sideMinX * spriteSize;
-	this->sideMinY = sideMinY * spriteSize;
-	this->sideMaxX = sideMaxX * spriteSize;
-	this->sideMaxY = sideMaxY * spriteSize;
+	this->side_min_x = side_min_x * sprite_size;
+	this->side_min_y = side_min_y * sprite_size;
+	this->side_max_x = side_max_x * sprite_size;
+	this->side_max_y = side_max_y * sprite_size;
 }

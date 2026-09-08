@@ -13,8 +13,8 @@ class Renderer
 public:
 
 
-	void Draw(const VAO& va, Shader& shader, GLuint numIndices);
-	void Clear() const;
+	void draw(const VAO& va, Shader& shader, GLuint num_indices);
+	void clear() const;
 
 
 private:

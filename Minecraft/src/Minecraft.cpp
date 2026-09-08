@@ -21,52 +21,54 @@
 
 GLFWwindow *window = nullptr;
 
-void Minecraft::Run() {
+void Minecraft::run() {
 
-  if (!initGL()) {
+  if (!init_gl()) {
     MC_FATAL("Initlization Failed!");
     return;
   }
 
-  Shader::InitShaders();
-  Texture::InitTextures();
+  Shader::init_shaders();
+  Texture::init_textures();
 
-  Shader *main_shader = Shader::getShader("main_shader");
-  Shader *model_shader = Shader::getShader("model_shader");
+  Shader *main_shader = Shader::get_shader("main_shader");
+  Shader *model_shader = Shader::get_shader("model_shader");
 
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   Gui gui(window);
-  World &world = World::GetWorld();
-  Camera &camera = Camera::GetCamera();
-  AppAttribs &appAttribs = AppAttribs::GetAppAttribs();
+  World &world = World::get_world();
+  Camera &camera = Camera::get_camera();
+  AppAttribs &app_attribs = AppAttribs::get_app_attribs();
 
-  float prevTime = 0.0f;
+  float prev_time = 0.0f;
 
   while (!glfwWindowShouldClose(window)) {
 
-    main_shader->Bind();
-    float curTime = glfwGetTime();
-    appAttribs.SetDeltaTime(curTime - prevTime);
-    prevTime = curTime;
+    main_shader->bind();
+    float cur_time = glfwGetTime();
+    app_attribs.set_delta_time(cur_time - prev_time);
+    prev_time = cur_time;
 
-    processInput(window);
+    process_input(window);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    gui.HandleGui();
+    gui.handle_gui();
 
-    glm::mat4 view = camera.CalcViewMatrix();
+    glm::mat4 view = camera.calc_view_matrix();
 
-    main_shader->SetUniformMat4f("view", view);
-    main_shader->SetUniformMat4f("projection", camera.GetProjMat());
-    model_shader->Bind();
-    model_shader->SetUniformMat4f("view", view);
-    model_shader->SetUniformMat4f("projection", camera.GetProjMat());
+    main_shader->set_uniform_mat4f("view", view);
+    main_shader->set_uniform_mat4f("projection", camera.get_proj_mat());
+    model_shader->bind();
+    model_shader->set_uniform_mat4f("view", view);
+    model_shader->set_uniform_mat4f("projection", camera.get_proj_mat());
 
-    world.Update(camera.GetPos(), main_shader);
-    world.Render(main_shader, model_shader);
-    camera.OnUpdate(appAttribs.GetDeltaTime());
+    float dt = app_attribs.get_delta_time();
+    world.update(camera.get_pos(), main_shader, dt);
+    camera.on_update(dt);
+
+    world.render(main_shader, model_shader);
 
     glfwPollEvents();
     glfwSwapBuffers(window);
@@ -74,13 +76,13 @@ void Minecraft::Run() {
 }
 
 Minecraft::~Minecraft() {
-  Shader::DeleteShaders();
-  Texture::DeleteTextures();
+  Shader::delete_shaders();
+  Texture::delete_textures();
   glfwTerminate();
   glfwDestroyWindow(window);
 }
 
-bool Minecraft::initGL() {
+bool Minecraft::init_gl() {
 
   bool success = true;
 
@@ -100,7 +102,7 @@ bool Minecraft::initGL() {
 
     // Create window
     window =
-        glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Minecraft", NULL, NULL);
+        glfwCreateWindow(screen_width, screen_height, "Minecraft", NULL, NULL);
 
     if (window == NULL) {
       MC_ERROR("Failed to create GLFW window");
@@ -125,9 +127,9 @@ bool Minecraft::initGL() {
                              glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // Configure viewport and rendering
-    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glViewport(0, 0, screen_width, screen_height);
     glfwSetFramebufferSizeCallback(window,
-                                   CallBackStates::framebufferSizeCallback);
+                                   CallBackStates::framebuffer_size_callback);
     glfwSetCursorPosCallback(window, CallBackStates::mouse_callback);
     glfwSetScrollCallback(window, CallBackStates::scroll_callback);
     glfwSetMouseButtonCallback(window, CallBackStates::mouse_button_callback);

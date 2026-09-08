@@ -9,16 +9,16 @@ out vec2 TexCoord;
 out vec3 WorldPos;
 out vec3 Normal;
 
-uniform mat4 model;
+uniform mat4 uModel;
 uniform mat4 view;
 uniform mat4 projection;
 
 void main()
 {
-    vec4 worldPosition = model * vec4(aPos, 1.0);
+    vec4 worldPosition = uModel * vec4(aPos, 1.0);
 
     WorldPos = worldPosition.xyz;
-    Normal = normalize(mat3(transpose(inverse(model))) * aNormal);
+    Normal = normalize(mat3(transpose(inverse(uModel))) * aNormal);
     TexCoord = aTexCoord;
 
     gl_Position = projection * view * worldPosition;

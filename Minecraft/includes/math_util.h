@@ -18,7 +18,7 @@ enum Corner {
 
 enum Direction : int8_t { NORTH = 0, SOUTH, EAST, WEST, UP, DOWN, NONE };
 
-constexpr glm::vec3 DIRECTION_VEC[6] = {{0, 0, 1},  {0, 0, -1}, {1, 0, 0},
+constexpr glm::vec3 direction_vec[6] = {{0, 0, 1},  {0, 0, -1}, {1, 0, 0},
                                         {-1, 0, 0}, {0, 1, 0},  {0, -1, 0}};
 
 #endif

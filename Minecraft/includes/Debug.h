@@ -22,23 +22,23 @@
 #endif
 
 #define GlCall(x)                                                              \
-  ClearGl();                                                                   \
+  clear_gl();                                                                   \
   x;                                                                           \
-  ASSERT(GetError(#x, __FILE__, __LINE__));
+  ASSERT(get_error(#x, __FILE__, __LINE__));
 
-void ClearGl();
+void clear_gl();
 
-bool GetError(const char *function, const char *file, int line);
+bool get_error(const char *function, const char *file, int line);
 
 class Gui {
 public:
   Gui(GLFWwindow *);
   ~Gui();
-  void HandleGui();
+  void handle_gui();
 
 private:
-  GLFWwindow *m_Window;
-  ImGuiIO *m_Io;
+  GLFWwindow *m_window;
+  ImGuiIO *m_io;
 
   bool m_show_demo_window = true;
   bool m_show_another_window = false;
