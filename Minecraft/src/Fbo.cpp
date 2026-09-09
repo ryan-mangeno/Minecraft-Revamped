@@ -22,8 +22,8 @@ GLuint create_depth_texture(GLsizei width, GLsizei height) {
   return texture_id;
 }
 
-FBO::FBO() { glGenFramebuffers(1, &m_id); }
-
+// maybe move to some defined destroy method
+// to avoid destruction ordering issues
 FBO::~FBO() {
   if (m_id != 0) {
     glDeleteFramebuffers(1, &m_id);
@@ -45,6 +45,9 @@ FBO &FBO::operator=(FBO &&other) noexcept {
   return *this;
 }
 
+// support multiple buffers in constructor
+void FBO::init() { glGenFramebuffers(1, &m_id); }
+
 void FBO::bind(GLenum target) const { glBindFramebuffer(target, m_id); }
 
 void FBO::unbind(GLenum target) { glBindFramebuffer(target, 0); }
@@ -52,12 +55,11 @@ void FBO::unbind(GLenum target) { glBindFramebuffer(target, 0); }
 void FBO::attach_texture_2d(GLenum attachment, GLuint texture_id,
                             GLint mip_level, GLenum texture_target) const {
   bind();
-  glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture_target,
-                         texture_id, mip_level);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, texture_target, texture_id,
+                         mip_level);
 }
 
-void FBO::attach_renderbuffer(GLenum attachment,
-                              GLuint renderbuffer_id) const {
+void FBO::attach_renderbuffer(GLenum attachment, GLuint renderbuffer_id) const {
   bind();
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER,
                             renderbuffer_id);

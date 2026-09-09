@@ -7,6 +7,7 @@ layout (location = 2) in vec2 aTexCoord;
 
 out vec2 TexCoord;
 out vec3 TotalColoring;
+out vec4 FragPosLightSpace;
 
 uniform vec3 uSunDir;
 uniform vec3 uCamPos;
@@ -20,6 +21,8 @@ uniform int uPointLightCount;
 uniform vec3 uPointLightPositions[MAX_POINT_LIGHTS];
 uniform vec3 uPointLightColors[MAX_POINT_LIGHTS];
 
+uniform mat4 uLightSpaceMatrix;
+
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -27,6 +30,7 @@ uniform mat4 projection;
 void main()
 {
     vec3 WorldPos = vec3(model * vec4(aPos, 1.0));
+    FragPosLightSpace = uLightSpaceMatrix * vec4(WorldPos, 1.0f);
 
     gl_Position = projection * view * vec4(WorldPos, 1.0);
 
@@ -58,12 +62,24 @@ void main()
 
 in vec2 TexCoord;
 in vec3 TotalColoring;
+in vec4 FragPosLightSpace;
 
 out vec4 FragColor;
 
 uniform sampler2D tex;
+uniform sampler2D uShadowMap;
 
 void main()
 {
-	FragColor = texture(tex, TexCoord) * vec4(TotalColoring, 1.0f);
+    vec3 frag_pos = FragPosLightSpace.xyz / FragPosLightSpace.w;
+    frag_pos = frag_pos * 0.5 + 0.5; // remap from [-1,1] to [0,1]
+    float stored_depth = texture(uShadowMap, frag_pos.xy).r;
+    float cur_depth = frag_pos.z;
+    float brightness = 0.5;
+    float bias = 0.005;
+    // if its visable to sun
+    if (cur_depth - bias <= stored_depth) {
+        brightness = 1.0f;
+    }
+	FragColor = texture(tex, TexCoord) * (vec4(TotalColoring, 1.0f) * brightness);
 }

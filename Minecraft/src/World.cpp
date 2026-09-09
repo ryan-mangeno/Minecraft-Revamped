@@ -1,8 +1,11 @@
 #include "World.h"
 #include "FMath.h"
+#include "Log.h"
 #include "constants.h"
+#include "render_defines.h"
 
-#include <iostream>
+#include <algorithm>
+#include <vector>
 
 World::World()
     : m_thread_pool(4), m_render_height(1), m_chunks_loading(0),
@@ -10,6 +13,8 @@ World::World()
       m_prev_cam_y(20), m_prev_cam_z(0),
       m_torch_model(
           (get_resource_path() / "assets/minecraft_torch.glb").string()) {
+
+  m_atmosphere.init();
   m_atmosphere.add_light({0.0f, 27.0f, 0.0f}, {255.0f, 0.0f, 0.0f});
   m_atmosphere.add_light({0.0f, 27.0f, -3.0f}, {0.0f, 0.0f, 255.f});
 
@@ -126,10 +131,24 @@ void World::update(glm::vec3 cam_pos, Shader *shader, float dt) {
 
 void World::render(Shader *terrain_shader, Shader *model_shader) {
 
+  Shader *depth_shader = Shader::get_shader("depth_shader");
+  depth_shader->bind();
+  m_atmosphere.begin_shadow_pass();
+  for (auto it = m_chunks.begin(); it != m_chunks.end(); it++) {
+    it->second.try_render(depth_shader);
+  }
+
+  m_atmosphere.end_shadow_pass();
+  depth_shader->unbind();
+
   // set sun pos
   terrain_shader->bind();
   terrain_shader->set_uniform_vec3f("uSunDir",
                                     m_atmosphere.get_sun_direction());
+  terrain_shader->set_uniform_mat4f("uLightSpaceMatrix",
+                                    m_atmosphere.get_light_space_matrix());
+  m_atmosphere.bind_shadow_map();
+  terrain_shader->set_uniform1i("uShadowMap", SHADOW_MAP_TEXTURE_SLOT);
 
   for (auto it = m_chunks.begin(); it != m_chunks.end(); it++) {
     it->second.try_render(terrain_shader);

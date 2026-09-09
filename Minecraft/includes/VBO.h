@@ -1,5 +1,5 @@
-#ifndef VBO_CLASS_H
-#define VBO_CLASS_H
+#ifndef VBO_H
+#define VBO_H
 
 #include <glad/glad.h>
 #include <vector>
@@ -8,8 +8,6 @@
 #include "math_util.h"
 
 class VBO {
-private:
-  GLuint m_id;
 
 public:
   template <typename T> VBO(const T vertices[], GLsizei size) {
@@ -27,7 +25,10 @@ public:
   void bind() const;
   void unbind() const;
 
-  inline GLuint get_id() { return m_id; };
+  inline uint32_t get_id() { return m_id; };
+
+private:
+  uint32_t m_id;
 };
 
 #endif

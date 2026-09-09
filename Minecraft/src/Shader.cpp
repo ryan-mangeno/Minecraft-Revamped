@@ -86,14 +86,15 @@ ShaderProgramSource get_file_contents(const std::string &filename) {
 }
 
 void Shader::set_uniform_mat4f(const std::string &uni_name,
-                             const glm::mat4 &matrix) {
+                               const glm::mat4 &matrix) {
   // obv id, then num of matrix's which is 1, then whether or not we have a row
   // major matrix or column to transpose, since its col we dont
-  glUniformMatrix4fv(get_uniform(uni_name), 1, GL_FALSE, glm::value_ptr(matrix));
+  glUniformMatrix4fv(get_uniform(uni_name), 1, GL_FALSE,
+                     glm::value_ptr(matrix));
 }
 
 void Shader::set_uniform_vec3_array(const std::string &uni_name,
-                                 const std::vector<glm::vec3> &values) {
+                                    const std::vector<glm::vec3> &values) {
   if (values.empty())
     return;
 
@@ -102,7 +103,7 @@ void Shader::set_uniform_vec3_array(const std::string &uni_name,
 }
 
 void Shader::set_uniform_vec3_array(const std::string &uni_name,
-                                 const float *base_ptr, size_t count) {
+                                    const float *base_ptr, size_t count) {
   if (!base_ptr)
     return;
 
@@ -114,9 +115,12 @@ void Shader::init_shaders() {
 
   Shader *main_shader = new Shader((shader_path / "shader.glsl").string());
   Shader *model_shader = new Shader((shader_path / "model.glsl").string());
+  Shader *depth_shader =
+      new Shader((shader_path / "depth_shader.glsl").string());
 
   m_shader_location_cache["main_shader"] = main_shader;
   m_shader_location_cache["model_shader"] = model_shader;
+  m_shader_location_cache["depth_shader"] = depth_shader;
 
   main_shader->bind();
 
@@ -148,9 +152,9 @@ GLint Shader::get_uniform(const std::string &name) {
     return m_uniform_location_cache[name];
 
   GLint loc = glGetUniformLocation(m_id, name.c_str());
-  if (loc == -1)
-    MC_WARN("Uniform: {}, does not exist...", name.c_str());
-  else
+  if (loc == -1) {
+    //  MC_WARN("Uniform: {}, does not exist...", name.c_str());
+  } else
     m_uniform_location_cache[name] = loc;
 
   return loc;
@@ -167,12 +171,12 @@ Shader *Shader::get_shader(const std::string &name) {
 }
 
 void Shader::set_uniform_vec4f(const std::string &uni_name,
-                             const glm::vec4 &vector) {
+                               const glm::vec4 &vector) {
   glUniform4f(get_uniform(uni_name), vector.x, vector.y, vector.z, vector.w);
 }
 
 void Shader::set_uniform_vec3f(const std::string &uni_name,
-                             const glm::vec3 &vector) {
+                               const glm::vec3 &vector) {
   glUniform3f(get_uniform(uni_name), vector.x, vector.y, vector.z);
 }
 

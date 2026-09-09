@@ -22,7 +22,7 @@
 #endif
 
 #define GlCall(x)                                                              \
-  clear_gl();                                                                   \
+  clear_gl();                                                                  \
   x;                                                                           \
   ASSERT(get_error(#x, __FILE__, __LINE__));
 

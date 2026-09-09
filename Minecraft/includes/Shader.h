@@ -24,7 +24,6 @@ ShaderProgramSource get_file_contents(const std::string &filename);
 class Shader {
 
 public:
-  GLuint m_id;
   Shader() {}
   Shader(const std::string &filename);
   static void delete_shaders();
@@ -37,10 +36,9 @@ public:
   void set_uniform_vec3f(const std::string &uni_name, const glm::vec3 &vector);
   void set_uniform_vec4f(const std::string &uni_name, const glm::vec4 &vector);
   void set_uniform_vec3_array(const std::string &uni_name,
-                           const std::vector<glm::vec3> &values);
-  void set_uniform_vec3_array(const std::string &uni_name, const float *base_ptr,
-                           size_t count);
-  ;
+                              const std::vector<glm::vec3> &values);
+  void set_uniform_vec3_array(const std::string &uni_name,
+                              const float *base_ptr, size_t count);
 
   GLint get_uniform(const std::string &uni_name);
   static Shader *get_shader(const std::string &shader_name);
@@ -49,9 +47,11 @@ public:
   void unbind() const;
   void compile_errors(unsigned int shader, const char *type);
 
-  inline GLint get_id() { return m_id; };
+  inline uint32_t get_id() { return m_id; };
 
 private:
+  uint32_t m_id;
+
   std::unordered_map<std::string, GLint> m_uniform_location_cache;
   static std::unordered_map<std::string, Shader *> m_shader_location_cache;
 };

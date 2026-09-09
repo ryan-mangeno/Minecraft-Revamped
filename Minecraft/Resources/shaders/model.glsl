@@ -38,9 +38,6 @@ uniform sampler2D texture_diffuse1;
 void main()
 {
     vec4 baseColor = texture(texture_diffuse1, TexCoord);
-
-    // TODO: Apply your lighting equation here. WorldPos and Normal are already
-    // available, so this shader is ready to receive the same light uniforms as
-    // the terrain shader.
+    // todo: apply coloring from lights
     FragColor = baseColor;
 }

@@ -9,7 +9,7 @@ GLuint create_depth_texture(GLsizei width, GLsizei height);
 
 class FBO {
 public:
-  FBO();
+  FBO() = default;
   ~FBO();
 
   FBO(const FBO &) = delete;
@@ -17,6 +17,8 @@ public:
 
   FBO(FBO &&other) noexcept;
   FBO &operator=(FBO &&other) noexcept;
+
+  void init();
 
   void bind(GLenum target = GL_FRAMEBUFFER) const;
   static void unbind(GLenum target = GL_FRAMEBUFFER);
@@ -30,10 +32,10 @@ public:
   void set_read_buffer(GLenum buffer) const;
 
   bool is_complete(GLenum target = GL_FRAMEBUFFER) const;
-  GLuint get_id() const;
+  uint32_t get_id() const;
 
 private:
-  GLuint m_id = 0;
+  uint32_t m_id{0};
 };
 
 #endif
