@@ -6,6 +6,8 @@
 #include "constants.h"
 #include "math_util.h"
 
+class World;
+
 class Camera {
 public:
   glm::mat4 calc_view_matrix() const;
@@ -19,7 +21,7 @@ public:
   void dispatch_mouse_move_event(float xrot, float yrot);
   void dispatch_mouse_scroll_event(float scroll);
 
-  void on_update(float delta_time);
+  void on_update(float delta_time, World &world);
 
   // singleton for camera, only one camera for minecraft
   static Camera &get_camera() {

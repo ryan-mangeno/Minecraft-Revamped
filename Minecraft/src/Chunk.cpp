@@ -14,7 +14,8 @@
 
 using uvec = std::vector<unsigned int>;
 
-Chunk::Chunk(glm::vec3 chunk_pos, Thread::ThreadPool &tp) {
+Chunk::Chunk(glm::vec3 chunk_pos, Thread::ThreadPool &tp, World &world)
+    : m_world(&world) {
   m_chunk_pos = chunk_pos;
   m_world_pos = glm::vec3(chunk_pos.x * chunk_size, chunk_pos.y * chunk_size,
                          chunk_pos.z * chunk_size);
@@ -26,13 +27,6 @@ Chunk::Chunk(glm::vec3 chunk_pos, Thread::ThreadPool &tp) {
   m_render = false;
 
   tp.enqueue_task(std::bind(&Chunk::generate_chunk, this));
-}
-
-Chunk::Chunk() {
-  m_chunk_pos = glm::vec3(0.f, 0.f, 0.f);
-  m_world_pos = glm::vec3(0.f, 0.f, 0.f);
-  m_ready = false;
-  m_generated = false;
 }
 
 Chunk::~Chunk() {
@@ -47,7 +41,7 @@ void Chunk::reset() {
 }
 
 void Chunk::remake_chunk() {
-  World &w = World::get_world();
+  World &w = *m_world;
   reset();
 
   uvec north_chunk, south_chunk, east_chunk, west_chunk, up_chunk, down_chunk;
@@ -323,7 +317,7 @@ void Chunk::remake_chunk() {
 
 void Chunk::generate_chunk() {
 
-  World &w = World::get_world();
+  World &w = *m_world;
 
   make_chunk_data(m_chunk_pos.x, m_chunk_pos.y, m_chunk_pos.z, chunk_size,
                 &m_chunk_data);

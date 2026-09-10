@@ -37,7 +37,8 @@ void Minecraft::run() {
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   Gui gui(window);
-  World &world = World::get_world();
+  World world;
+  glfwSetWindowUserPointer(window, &world);
   Camera &camera = Camera::get_camera();
   AppAttribs &app_attribs = AppAttribs::get_app_attribs();
 
@@ -66,13 +67,15 @@ void Minecraft::run() {
 
     float dt = app_attribs.get_delta_time();
     world.update(camera.get_pos(), main_shader, dt);
-    camera.on_update(dt);
+    camera.on_update(dt, world);
 
     world.render(main_shader, model_shader);
 
     glfwPollEvents();
     glfwSwapBuffers(window);
   }
+
+  glfwSetWindowUserPointer(window, nullptr);
 }
 
 Minecraft::~Minecraft() {

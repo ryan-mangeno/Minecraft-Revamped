@@ -62,19 +62,19 @@ void Camera::dispatch_keyboard_event(Direction dir, float delta_time) {
 }
 
 // for gravity sim
-void Camera::on_update(float delta_time) {
-  // resolve xz first at current height, then y after gravity
+void Camera::on_update(float delta_time, World &world) {
+  // resolve horizontal first at current height, then y after gravity
   // a pure side hit can't leak into a vertical push this way
 
   // narrowphase now does a real box vs box overlap test itself and
   // only returns actual collisions, so no gate check is needed here
-  auto query_hits = [this]() -> std::vector<ColliderResult> {
+  auto query_hits = [this, &world]() -> std::vector<ColliderResult> {
     std::vector<glm::vec3> blocks =
-        broad_phase(glm::floor(m_position_update - 2.0f),
-                   glm::ceil(m_position_update + 4.0f));
+        broad_phase(world, glm::floor(m_position_update - 2.0f),
+                    glm::ceil(m_position_update + 4.0f));
     glm::vec3 min_box_pos{m_position_update.x - player_width / 2.f,
-                        m_position_update.y - player_height,
-                        m_position_update.z - player_width / 2.0f};
+                          m_position_update.y - player_height,
+                          m_position_update.z - player_width / 2.0f};
     AABB box(min_box_pos, player_width, player_height);
     return narrow_phase(blocks, m_position_update, box);
   };
@@ -82,16 +82,17 @@ void Camera::on_update(float delta_time) {
   // horizontal pass
   {
     auto hit_blocks = query_hits();
-    glm::vec3 total_correction_xz(0.0f);
+    glm::vec3 total_horizontal_correction(0.0f);
+
     for (const auto &it : hit_blocks) {
       // keep the biggest correction instead of overwriting
-      if (it.overlap_xz != 0.0f) {
-        glm::vec3 c = it.normal * it.overlap_xz;
-        if (glm::length(c) > glm::length(total_correction_xz))
-          total_correction_xz = c;
+      if (it.overlap != 0.0f && it.normal.y == 0.0f) {
+        glm::vec3 candidate = it.normal * it.overlap;
+        if (glm::length(candidate) > glm::length(total_horizontal_correction))
+          total_horizontal_correction = candidate;
       }
     }
-    m_position_update += total_correction_xz;
+    m_position_update += total_horizontal_correction;
   }
 
   // vertical pass
@@ -105,8 +106,8 @@ void Camera::on_update(float delta_time) {
 
     glm::vec3 total_correction_y(0.0f);
     for (const auto &it : hit_blocks) {
-      if (it.overlap_y != 0.0f) {
-        glm::vec3 c = it.normal * it.overlap_y;
+      if (it.overlap != 0.0f && (it.normal.y == 1.0f || it.normal.y == -1.0f)) {
+        glm::vec3 c = it.normal * it.overlap;
         if (glm::length(c) > glm::length(total_correction_y))
           total_correction_y = c;
         m_velocity = 0.0f;

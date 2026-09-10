@@ -30,13 +30,22 @@ public:
 
   Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices,
        std::vector<Texture> textures);
+  ~Mesh();
+
+  Mesh(const Mesh &) = delete;
+  Mesh &operator=(const Mesh &) = delete;
+  Mesh(Mesh &&other) noexcept;
+  Mesh &operator=(Mesh &&other) noexcept;
 
   void render(Shader *shader);
 
 private:
-  GLuint vao, vbo, ebo;
+  uint32_t vao{0};
+  uint32_t vbo{0};
+  uint32_t ebo{0};
 
   void setup_mesh();
+  void release();
 };
 
 } // namespace ModelLoader

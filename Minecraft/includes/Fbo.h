@@ -7,6 +7,10 @@
 // texture and must eventually delete it with glDeleteTextures.
 GLuint create_depth_texture(GLsizei width, GLsizei height);
 
+struct Viewport {
+  int x, y, width, height;
+};
+
 class FBO {
 public:
   FBO() = default;

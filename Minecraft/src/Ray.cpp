@@ -40,11 +40,9 @@ struct BlockHit {
   bool operator>(const BlockHit &other) const { return t > other.t; }
 };
 
-bool Ray::cast(const glm::vec3 &direction, float max_dist) {
+bool Ray::cast(World &world, const glm::vec3 &direction, float max_dist) {
   glm::vec3 dir = glm::normalize(direction);
   glm::vec3 start = m_start_position;
-  World &world = World::get_world();
-
   auto hash_vec = [](const glm::ivec3 &v) {
     return std::hash<int>()(v.x) ^ std::hash<int>()(v.y << 1) ^
            std::hash<int>()(v.z << 2);

@@ -20,7 +20,7 @@ GLenum texture_format(int component_count) {
 }
 
 GLuint upload_texture(const unsigned char *data, int width, int height,
-                     int component_count) {
+                      int component_count) {
   const GLenum format = texture_format(component_count);
   if (!data || format == 0)
     return 0;
@@ -52,7 +52,8 @@ GLuint texture_from_embedded(const aiTexture *embedded) {
       reinterpret_cast<const stbi_uc *>(embedded->pcData),
       static_cast<int>(embedded->mWidth), &width, &height, &component_count, 0);
 
-  const GLuint texture_id = upload_texture(data, width, height, component_count);
+  const GLuint texture_id =
+      upload_texture(data, width, height, component_count);
   stbi_image_free(data);
   return texture_id;
 }
@@ -78,6 +79,13 @@ GLint texture_from_file(const char *fname, const std::string &directory) {
 }
 
 Model::Model(const std::string &fname) : file_path(fname) {}
+
+Model::~Model() {
+  for (const Texture &texture : textures_loaded) {
+    if (texture.id != 0)
+      glDeleteTextures(1, &texture.id);
+  }
+}
 
 void Model::init() {
   load_model(file_path);
@@ -191,7 +199,8 @@ ModelLoader::Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene) {
 
 std::vector<ModelLoader::Texture>
 Model::load_material_textures(aiMaterial *mat, aiTextureType type,
-                            const std::string &type_name, const aiScene *scene) {
+                              const std::string &type_name,
+                              const aiScene *scene) {
   std::vector<ModelLoader::Texture> textures;
 
   for (GLuint i = 0; i < mat->GetTextureCount(type); i++) {

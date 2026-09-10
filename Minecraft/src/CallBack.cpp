@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "AppAttribs.h"
 #include "Ray.h"
+#include "World.h"
 
 static AppAttribs &app_attribs = AppAttribs::get_app_attribs();
 Camera &camera = Camera::get_camera();
@@ -76,8 +77,11 @@ void CallBackStates::mouse_button_callback(GLFWwindow* window, int button, int a
 	{
 		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		{
+			World *world = static_cast<World *>(glfwGetWindowUserPointer(window));
+			if (!world)
+				return;
 			Ray r(camera.get_pos());
-			r.cast(camera.get_orientation(), 2.f);
+			r.cast(*world, camera.get_orientation(), 2.f);
 		}
 	}
 }

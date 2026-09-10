@@ -27,33 +27,25 @@ public:
 
   inline void set_dirty_chunk(int chunk_x, int chunk_y, int chunk_z) {
     cTuple chunk_tuple{chunk_x, chunk_y, chunk_z};
-    if (m_chunks.find(chunk_tuple) != m_chunks.end()) {
-      m_chunks[chunk_tuple].set_dirty(true);
-    }
+    auto chunk = m_chunks.find(chunk_tuple);
+    if (chunk != m_chunks.end())
+      chunk->second.set_dirty(true);
   }
 
   inline Chunk *get_chunk(int chunk_x, int chunk_y, int chunk_z) {
     cTuple chunk_tuple{chunk_x, chunk_y, chunk_z};
-    if (m_chunks.find(chunk_tuple) != m_chunks.end()) {
-      return &m_chunks[chunk_tuple];
-    } else {
-      return nullptr;
-    }
-  }
-
-  static World &get_world() {
-    static World w;
-    return w;
+    auto chunk = m_chunks.find(chunk_tuple);
+    return chunk != m_chunks.end() ? &chunk->second : nullptr;
   }
 
   void mark_neighbors(int lx, int ly, int lz, int cx, int cy, int cz);
 
 private:
-  // for chunk generation
-  Thread::ThreadPool m_thread_pool;
-
   std::unordered_map<cTuple, Chunk> m_chunks;
   std::queue<glm::vec3> m_queue;
+
+  // Declared after the chunks so its workers stop before chunks are destroyed.
+  Thread::ThreadPool m_thread_pool;
 
   int m_render_distance = 12;
   int m_render_height = 1;

@@ -8,6 +8,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+class World;
+
 using uvec = std::vector<unsigned int>;
 
 struct ChunkPosition {
@@ -29,10 +31,11 @@ struct ChunkOffset {
 
 class Chunk {
 public:
-  Chunk();
-
-  Chunk(glm::vec3 chunk_pos, Thread::ThreadPool &tp);
+  Chunk(glm::vec3 chunk_pos, Thread::ThreadPool &tp, World &world);
   ~Chunk();
+
+  Chunk(const Chunk &) = delete;
+  Chunk &operator=(const Chunk &) = delete;
 
   void generate_chunk();
   void try_render(Shader *shader);
@@ -54,6 +57,7 @@ private:
   void reset();
 
 private:
+  World *m_world;
   uvec m_chunk_data;
   glm::vec3 m_chunk_pos;
   bool m_ready;

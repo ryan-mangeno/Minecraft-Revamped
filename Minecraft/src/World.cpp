@@ -19,11 +19,12 @@ World::World()
   m_atmosphere.add_light({0.0f, 27.0f, -3.0f}, {0.0f, 0.0f, 255.f});
 
   // The OpenGL context exists before World is first requested in
-  // Minecraft::run.
+  // Minecraft::run
+
   m_torch_model.init();
 }
 
-World::~World() {}
+World::~World() { m_atmosphere.cleanup(); }
 
 void World::update(glm::vec3 cam_pos, Shader *shader, float dt) {
 
@@ -90,7 +91,7 @@ void World::update(glm::vec3 cam_pos, Shader *shader, float dt) {
     cTuple chunk_tuple{next.x, next.y, next.z};
 
     if (m_chunks.find(chunk_tuple) == m_chunks.end()) {
-      m_chunks.try_emplace(chunk_tuple, next, m_thread_pool);
+      m_chunks.try_emplace(chunk_tuple, next, m_thread_pool, *this);
     }
   }
 
@@ -173,7 +174,7 @@ std::vector<unsigned int> &World::get_chunk_data(int chunk_x, int chunk_y,
     static std::vector<unsigned int> empty_vector;
     return empty_vector;
   } else {
-    return m_chunks[chunk_tuple].get_data();
+    return m_chunks.find(chunk_tuple)->second.get_data();
   }
 }
 

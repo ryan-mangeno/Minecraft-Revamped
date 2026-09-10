@@ -28,6 +28,10 @@ GLint texture_from_file(const char *fname, const std::string &directory);
 class Model {
 public:
   explicit Model(const std::string &fname);
+  ~Model();
+
+  Model(const Model &) = delete;
+  Model &operator=(const Model &) = delete;
 
   void init();
   void render(Shader *shader);
@@ -48,7 +52,7 @@ private:
 
   std::vector<ModelLoader::Texture>
   load_material_textures(aiMaterial *mat, aiTextureType type,
-                       const std::string &type_name, const aiScene *scene);
+                         const std::string &type_name, const aiScene *scene);
 };
 
 } // namespace ModelLoader

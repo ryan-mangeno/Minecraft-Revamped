@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 
+class World;
 
 
 class Ray
@@ -13,7 +14,7 @@ class Ray
 		// unsure of return type
 		// may return block or boolean
 
-		bool cast(const glm::vec3& direction , float max_dist);
+		bool cast(World &world, const glm::vec3& direction , float max_dist);
 
 
 	private:

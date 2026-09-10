@@ -1,12 +1,49 @@
 #include "Mesh.h"
 
 #include <glad/glad.h>
+#include <utility>
 
 ModelLoader::Mesh::Mesh(std::vector<Vertex> vertices,
                         std::vector<GLuint> indices,
                         std::vector<Texture> textures)
-    : vertices(vertices), indices(indices), textures(textures) {
+    : vertices(std::move(vertices)), indices(std::move(indices)),
+      textures(std::move(textures)) {
   setup_mesh();
+}
+
+ModelLoader::Mesh::~Mesh() { release(); }
+
+ModelLoader::Mesh::Mesh(Mesh &&other) noexcept
+    : vertices(std::move(other.vertices)), indices(std::move(other.indices)),
+      textures(std::move(other.textures)),
+      vao(std::exchange(other.vao, 0)), vbo(std::exchange(other.vbo, 0)),
+      ebo(std::exchange(other.ebo, 0)) {}
+
+ModelLoader::Mesh &ModelLoader::Mesh::operator=(Mesh &&other) noexcept {
+  if (this == &other)
+    return *this;
+
+  release();
+  vertices = std::move(other.vertices);
+  indices = std::move(other.indices);
+  textures = std::move(other.textures);
+  vao = std::exchange(other.vao, 0);
+  vbo = std::exchange(other.vbo, 0);
+  ebo = std::exchange(other.ebo, 0);
+  return *this;
+}
+
+void ModelLoader::Mesh::release() {
+  if (ebo != 0)
+    glDeleteBuffers(1, &ebo);
+  if (vbo != 0)
+    glDeleteBuffers(1, &vbo);
+  if (vao != 0)
+    glDeleteVertexArrays(1, &vao);
+
+  vao = 0;
+  vbo = 0;
+  ebo = 0;
 }
 
 void ModelLoader::Mesh::setup_mesh() {

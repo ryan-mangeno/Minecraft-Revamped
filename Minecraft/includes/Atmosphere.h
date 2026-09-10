@@ -18,11 +18,14 @@ struct PointLights {
 class Atmosphere {
 public:
   Atmosphere() = default;
+  ~Atmosphere();
   Atmosphere(const glm::vec3 &sun_dir, float ambient)
       : m_sun_dir(sun_dir), m_ambient_strength(ambient) {}
 
   // maybe pass in shadow map params but will default for now
   void init();
+  void cleanup();
+
   void begin_shadow_pass();
   void end_shadow_pass();
   void bind_shadow_map() const;
@@ -51,7 +54,7 @@ private:
   FBO m_shadow_map;
   uint32_t m_shadow_depth_id{0};
   glm::mat4 m_light_space_matrix{1.0f};
-  GLint m_previous_viewport[4]{0, 0, 0, 0};
+  Viewport m_prev_viewport;
 
   PointLights m_point_lights;
 };
