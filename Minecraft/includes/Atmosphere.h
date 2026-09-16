@@ -44,7 +44,7 @@ public:
 private:
   // direction in which all light rays point, updates over dt
   glm::vec3 m_sun_dir{0.0f, -1.0f, 0.0f};
-  float m_sun_speed{0.2f};
+  float m_sun_speed{0.1f};
   float m_sun_theta{0.0f};
 
   float m_ambient_strength{0.5f};

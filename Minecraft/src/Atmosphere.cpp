@@ -12,7 +12,6 @@ void Atmosphere::init() {
 
   m_shadow_map.init();
 
-  // TODO: clean up depth texture created in some cleaup func
   m_shadow_depth_id = create_depth_texture(SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT);
   m_shadow_map.attach_texture_2d(GL_DEPTH_ATTACHMENT, m_shadow_depth_id);
 

@@ -76,7 +76,7 @@ void main()
     float stored_depth = texture(uShadowMap, frag_pos.xy).r;
     float cur_depth = frag_pos.z;
     float brightness = 0.5;
-    float bias = 0.005;
+    float bias = 0.05;
     // if its visable to sun
     if (cur_depth - bias <= stored_depth) {
         brightness = 1.0f;
