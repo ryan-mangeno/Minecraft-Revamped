@@ -83,6 +83,8 @@ void Atmosphere::update(Shader *shader, float dt) {
                  shadow_half_extent, near_plane, far_plane);
   m_light_space_matrix = light_projection_mat * light_view_mat;
 
+  update_point_lights(dt);
+
   Shader *depth_shader = Shader::get_shader("depth_shader");
   depth_shader->bind();
   depth_shader->set_uniform_mat4f("uLightSpaceMatrix", m_light_space_matrix);
@@ -107,7 +109,13 @@ void Atmosphere::update(Shader *shader, float dt) {
   shader->set_uniform_vec3f("uCamPos", cam.get_pos());
 }
 
-void render(Shader *shader) {
+void Atmosphere::update_point_lights(float dt) {
+  // some temporary updating
+  m_point_lights.positions[0].x = 2.0f*glm::cos(20*m_sun_theta);
+  m_point_lights.positions[0].z = 2.0f*glm::sin(20*m_sun_theta);
+}
+
+void Atmosphere::render(Shader *shader) {
   // no atmosphere to render yet
   // sun has no rendering but does have a pos for lighting
 }

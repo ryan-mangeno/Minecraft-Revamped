@@ -15,8 +15,9 @@ World::World()
           (get_resource_path() / "assets/minecraft_torch.glb").string()) {
 
   m_atmosphere.init();
-  m_atmosphere.add_light({0.0f, 27.0f, 0.0f}, {255.0f, 0.0f, 0.0f});
-  m_atmosphere.add_light({0.0f, 27.0f, -3.0f}, {0.0f, 0.0f, 255.f});
+  // pre normalize the rgb values for now
+  m_atmosphere.add_light({0.0f, 27.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
+  m_atmosphere.add_light({0.0f, 27.0f, -3.0f}, {0.0f, 0.0f, 1.f});
 
   // The OpenGL context exists before World is first requested in
   // Minecraft::run

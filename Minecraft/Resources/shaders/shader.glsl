@@ -6,8 +6,9 @@ layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoord;
 
 out vec2 TexCoord;
-out vec3 TotalColoring;
+out vec3 OtherLighting;
 out vec4 FragPosLightSpace;
+out vec3 DirectSunLighting;
 
 uniform vec3 uSunDir;
 uniform vec3 uCamPos;
@@ -42,18 +43,26 @@ void main()
     float specular = uSpecularStrength * pow(max(0.0, dot(reflectDir, viewDir)), uShininess);
     float diffuse = max(0.0, dot(aNormal, -uSunDir));
 
-    float brightness = specular + diffuse + uAmbientStrength;
-    // start with sun coloring, white for now
-    TotalColoring = vec3(1.0f) * brightness;
+    // sun coloring is just white
+    DirectSunLighting = vec3(1.0f) * (specular + diffuse);
+    OtherLighting = vec3(uAmbientStrength); // build up the other lighting
+
+    float intensity = 0.85f;
+    // cutoff for point lights
+    float radius_sqd = 64.0f;
+
     for (int i = 0; i < uPointLightCount; ++i) {
         vec3 toLight = uPointLightPositions[i] - WorldPos;
         float distanceToLight = length(toLight);
         vec3 pointLightDir = normalize(toLight);
         float pointDiffuse = max(0.0, dot(aNormal, pointLightDir));
-        float attenuation = 1.0 / (1.0 + distanceToLight * distanceToLight);
-        float intensity = 0.3;
-        float point_brightness = pointDiffuse * attenuation * intensity;
-        TotalColoring += point_brightness * uPointLightColors[i];
+        float attenuation = 1.0f / (1.0f + distanceToLight * distanceToLight);
+        float point_brightness = 0.0f;
+
+        if (distanceToLight * distanceToLight < radius_sqd) {
+            float point_brightness = pointDiffuse * attenuation * intensity;
+            OtherLighting += point_brightness * uPointLightColors[i];
+        }
     }
 }
 
@@ -61,7 +70,8 @@ void main()
 #version 410 core
 
 in vec2 TexCoord;
-in vec3 TotalColoring;
+in vec3 OtherLighting;
+in vec3 DirectSunLighting;
 in vec4 FragPosLightSpace;
 
 out vec4 FragColor;
@@ -69,17 +79,35 @@ out vec4 FragColor;
 uniform sampler2D tex;
 uniform sampler2D uShadowMap;
 
+float pcs_sample(float x, float y, float cur_depth, float bias, float len) {
+    float bound = floor(len/2.0f);
+    float top = y + bound / 2048.0f;
+    float bottom = y - bound / 2048.0f;
+    float left = x - bound / 2048.0f;
+    float right = x + bound / 2048.0f;
+    float step = (1.0f / 2048.0f);
+    float sun_visibility = 0.0f;
+
+    for (float y_i = top ; y_i >= bottom ; y_i -= step) {
+        for (float x_i = left ; x_i <= right; x_i += step) {
+            float stored_depth = texture(uShadowMap, vec2(x_i, y_i)).r;
+            if (cur_depth - bias <= stored_depth) {
+                sun_visibility += 1.0f;
+            }
+        }
+    }
+    return sun_visibility / (len*len);
+}
+
 void main()
 {
     vec3 frag_pos = FragPosLightSpace.xyz / FragPosLightSpace.w;
     frag_pos = frag_pos * 0.5 + 0.5; // remap from [-1,1] to [0,1]
-    float stored_depth = texture(uShadowMap, frag_pos.xy).r;
     float cur_depth = frag_pos.z;
-    float brightness = 0.5;
-    float bias = 0.05;
+    float bias = 0.1;
+    float sample_box_len = 3.0f;
+    float sun_visibility = pcs_sample(frag_pos.x, frag_pos.y, cur_depth, bias, sample_box_len);
     // if its visable to sun
-    if (cur_depth - bias <= stored_depth) {
-        brightness = 1.0f;
-    }
-	FragColor = texture(tex, TexCoord) * (vec4(TotalColoring, 1.0f) * brightness);
+	FragColor = texture(tex, TexCoord) * vec4(OtherLighting + DirectSunLighting * sun_visibility, 1.0f);
+
 }

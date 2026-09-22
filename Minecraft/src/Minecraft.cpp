@@ -99,6 +99,8 @@ bool Minecraft::init_gl() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
+
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -145,6 +147,7 @@ bool Minecraft::init_gl() {
     glFrontFace(GL_CW);
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_FRAMEBUFFER_SRGB);
   }
 
   return success;

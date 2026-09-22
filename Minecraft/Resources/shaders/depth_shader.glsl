@@ -13,5 +13,5 @@ void main() {
 #shader fragment
 #version 410 core
 void main() {
-  // empty since we dont render
+  // empty since we dont render+
 }
