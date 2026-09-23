@@ -2,7 +2,7 @@
 
 HDR::~HDR() { cleanup(); }
 
-bool HDR::init(uint32_t width, uint32_t height) {
+bool HDR::init(int width, int height) {
   if (width <= 0 || height <= 0 || m_fbo.get_id() != 0) {
     return false;
   }
