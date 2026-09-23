@@ -12,6 +12,7 @@
 #include "CallBack.h"
 #include "Camera.h"
 #include "Debug.h"
+#include "Hdr.h"
 #include "Log.h"
 #include "Minecraft.h"
 #include "Shader.h"
@@ -38,6 +39,15 @@ void Minecraft::run() {
 
   Gui gui(window);
   World world;
+  HDR hdr;
+  int framebuffer_width = 0;
+  int framebuffer_height = 0;
+  glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
+  if (!hdr.init(framebuffer_width, framebuffer_height)) {
+    MC_ERROR("HDR framebuffer creation failed!");
+    return;
+  }
+
   glfwSetWindowUserPointer(window, &world);
   Camera &camera = Camera::get_camera();
   AppAttribs &app_attribs = AppAttribs::get_app_attribs();

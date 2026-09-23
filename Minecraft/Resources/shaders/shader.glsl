@@ -47,7 +47,7 @@ void main()
     DirectSunLighting = vec3(1.0f) * (specular + diffuse);
     OtherLighting = vec3(uAmbientStrength); // build up the other lighting
 
-    float intensity = 0.85f;
+    float intensity = 32.0f;
     // cutoff for point lights
     float radius_sqd = 64.0f;
 
@@ -60,7 +60,7 @@ void main()
         float point_brightness = 0.0f;
 
         if (distanceToLight * distanceToLight < radius_sqd) {
-            float point_brightness = pointDiffuse * attenuation * intensity;
+            point_brightness = pointDiffuse * attenuation * intensity;
             OtherLighting += point_brightness * uPointLightColors[i];
         }
     }
