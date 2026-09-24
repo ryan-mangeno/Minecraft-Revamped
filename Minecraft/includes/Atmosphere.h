@@ -40,6 +40,7 @@ public:
     return m_light_space_matrix;
   }
   const PointLights &get_point_lights() const { return m_point_lights; }
+  uint32_t get_shadow_depth_id() const { return m_shadow_depth_id; }
 
 private:
   void update_point_lights(float dt);

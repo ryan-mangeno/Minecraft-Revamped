@@ -131,8 +131,7 @@ void World::update(glm::vec3 cam_pos, Shader *shader, float dt) {
   m_atmosphere.update(shader, dt);
 }
 
-void World::render(Shader *terrain_shader, Shader *model_shader) {
-
+void World::render_shadow_pass() {
   Shader *depth_shader = Shader::get_shader("depth_shader");
   depth_shader->bind();
   m_atmosphere.begin_shadow_pass();
@@ -142,7 +141,9 @@ void World::render(Shader *terrain_shader, Shader *model_shader) {
 
   m_atmosphere.end_shadow_pass();
   depth_shader->unbind();
+}
 
+void World::render_scene(Shader *terrain_shader, Shader *model_shader) {
   // set sun pos
   terrain_shader->bind();
   terrain_shader->set_uniform_vec3f("uSunDir",
@@ -150,7 +151,6 @@ void World::render(Shader *terrain_shader, Shader *model_shader) {
   terrain_shader->set_uniform_mat4f("uLightSpaceMatrix",
                                     m_atmosphere.get_light_space_matrix());
   m_atmosphere.bind_shadow_map();
-  terrain_shader->set_uniform1i("uShadowMap", SHADOW_MAP_TEXTURE_SLOT);
 
   for (auto it = m_chunks.begin(); it != m_chunks.end(); it++) {
     it->second.try_render(terrain_shader);

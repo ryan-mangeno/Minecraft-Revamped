@@ -15,7 +15,7 @@ uniform vec3 uCamPos;
 uniform float uAmbientStrength;
 uniform float uSpecularStrength;
 uniform float uShininess;
-uniform sampler2D tex;
+uniform sampler2D uAtlas;
 
 const int MAX_POINT_LIGHTS = 16;
 uniform int uPointLightCount;
@@ -35,7 +35,7 @@ void main()
 
     gl_Position = projection * view * vec4(WorldPos, 1.0);
 
-    TexCoord = aTexCoord / vec2(textureSize(tex, 0));
+    TexCoord = aTexCoord / vec2(textureSize(uAtlas, 0));
 
     vec3 viewDir = normalize(uCamPos - WorldPos);
     vec3 reflectDir = reflect(uSunDir, aNormal);
@@ -76,7 +76,7 @@ in vec4 FragPosLightSpace;
 
 out vec4 FragColor;
 
-uniform sampler2D tex;
+uniform sampler2D uAtlas;
 uniform sampler2D uShadowMap;
 
 float pcs_sample(float x, float y, float cur_depth, float bias, float len) {
@@ -108,6 +108,6 @@ void main()
     float sample_box_len = 3.0f;
     float sun_visibility = pcs_sample(frag_pos.x, frag_pos.y, cur_depth, bias, sample_box_len);
     // if its visable to sun
-	FragColor = texture(tex, TexCoord) * vec4(OtherLighting + DirectSunLighting * sun_visibility, 1.0f);
-
+    vec3 final_lighting = OtherLighting + DirectSunLighting * sun_visibility;
+    FragColor = texture(uAtlas, TexCoord) * vec4(final_lighting, 1.0f);
 }

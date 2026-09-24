@@ -20,6 +20,7 @@ public:
 
   inline uint32_t tex_id() const { return m_color_texture_id; }
   inline uint32_t depth_id() const { return m_depth_renderbuffer_id; }
+  inline uint32_t fbo_id() const { return m_fbo.get_id(); }
   inline int width() const { return m_width; }
   inline int height() const { return m_height; }
 

@@ -23,7 +23,11 @@ public:
 
   std::vector<unsigned int> &get_chunk_data(int chunk_x, int chunk_y, int chunk_z);
   void update(glm::vec3 cam_pos, Shader *shader, float dt);
-  void render(Shader *terrain_shader, Shader *model_shader);
+  void render_shadow_pass();
+  void render_scene(Shader *terrain_shader, Shader *model_shader);
+  uint32_t get_shadow_map_texture_id() const {
+    return m_atmosphere.get_shadow_depth_id();
+  }
 
   inline void set_dirty_chunk(int chunk_x, int chunk_y, int chunk_z) {
     cTuple chunk_tuple{chunk_x, chunk_y, chunk_z};

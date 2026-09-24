@@ -18,7 +18,7 @@ Chunk::Chunk(glm::vec3 chunk_pos, Thread::ThreadPool &tp, World &world)
     : m_world(&world) {
   m_chunk_pos = chunk_pos;
   m_world_pos = glm::vec3(chunk_pos.x * chunk_size, chunk_pos.y * chunk_size,
-                         chunk_pos.z * chunk_size);
+                          chunk_pos.z * chunk_size);
   m_ready = false;
   m_generated = false;
 
@@ -320,7 +320,7 @@ void Chunk::generate_chunk() {
   World &w = *m_world;
 
   make_chunk_data(m_chunk_pos.x, m_chunk_pos.y, m_chunk_pos.z, chunk_size,
-                &m_chunk_data);
+                  &m_chunk_data);
 
   uvec north_chunk, south_chunk, east_chunk, west_chunk, up_chunk, down_chunk;
 
@@ -649,7 +649,7 @@ void Chunk::try_render(Shader *shader) {
     shader->bind();
 
     Texture::get_texture(0).bind(0);
-    shader->set_uniform1i("tex", 0);
+    shader->set_uniform1i("uAtlas", 0);
 
     glBindVertexArray(m_vao);
 
@@ -668,8 +668,8 @@ void Chunk::set_block(int idx, unsigned int block_type) {
   m_chunk_data.at(idx) = block_type;
 }
 
-void Chunk::make_chunk_data(int chunk_x, int chunk_y, int chunk_z, int chunk_size,
-                          uvec *chunk_data) {
+void Chunk::make_chunk_data(int chunk_x, int chunk_y, int chunk_z,
+                            int chunk_size, uvec *chunk_data) {
 
   chunk_data->reserve(chunk_size * chunk_size * chunk_size);
 
@@ -685,14 +685,14 @@ void Chunk::make_chunk_data(int chunk_x, int chunk_y, int chunk_z, int chunk_siz
   for (int x = 0; x < chunk_size; x++) {
     for (int z = 0; z < chunk_size; z++) {
       int noise_y = (surface_noise.eval((float)(x + base_x) * .1f,
-                                      (float)(z + base_z) * .1f) *
-                    height_scale) +
-                   20;
+                                        (float)(z + base_z) * .1f) *
+                     height_scale) +
+                    20;
       for (int y = 0; y < chunk_size; y++) {
 
         float noise_caves = cave_noise.eval((float)(x + base_x) * noise_scale,
-                                          (float)(y + base_y) * noise_scale,
-                                          (float)(z + base_z) * noise_scale);
+                                            (float)(y + base_y) * noise_scale,
+                                            (float)(z + base_z) * noise_scale);
 
         int num_water_blocks = noise_y - water_level;
 

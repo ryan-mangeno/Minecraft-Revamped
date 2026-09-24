@@ -12,9 +12,9 @@
 #include "CallBack.h"
 #include "Camera.h"
 #include "Debug.h"
-#include "Hdr.h"
 #include "Log.h"
 #include "Minecraft.h"
+#include "Render.h"
 #include "Shader.h"
 #include "Texture.h"
 #include "World.h"
@@ -39,11 +39,12 @@ void Minecraft::run() {
 
   Gui gui(window);
   World world;
-  HDR hdr;
+  Renderer renderer;
+  // todo: check if this defaults to 2560 x 1080
   int framebuffer_width = 0;
   int framebuffer_height = 0;
   glfwGetFramebufferSize(window, &framebuffer_width, &framebuffer_height);
-  if (!hdr.init(framebuffer_width, framebuffer_height)) {
+  if (!renderer.init(framebuffer_width, framebuffer_height)) {
     MC_ERROR("HDR framebuffer creation failed!");
     return;
   }
@@ -51,6 +52,7 @@ void Minecraft::run() {
   glfwSetWindowUserPointer(window, &world);
   Camera &camera = Camera::get_camera();
   AppAttribs &app_attribs = AppAttribs::get_app_attribs();
+  app_attribs.set_frame_buff_sizes(framebuffer_width, framebuffer_height);
 
   float prev_time = 0.0f;
 
@@ -62,10 +64,6 @@ void Minecraft::run() {
     prev_time = cur_time;
 
     process_input(window);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    gui.handle_gui();
 
     glm::mat4 view = camera.calc_view_matrix();
 
@@ -79,7 +77,9 @@ void Minecraft::run() {
     world.update(camera.get_pos(), main_shader, dt);
     camera.on_update(dt, world);
 
-    world.render(main_shader, model_shader);
+    renderer.render(world, main_shader, model_shader, app_attribs.get_width(),
+                    app_attribs.get_height());
+    gui.handle_gui(renderer.get_debug_textures(world));
 
     glfwPollEvents();
     glfwSwapBuffers(window);

@@ -48,7 +48,7 @@ Gui::~Gui()
 	ImGui::DestroyContext();
 }
 
-void Gui::handle_gui()
+void Gui::handle_gui(const std::vector<DebugTexture> &debug_textures)
 {
 
 	// Start the Dear ImGui frame
@@ -65,8 +65,44 @@ void Gui::handle_gui()
 	ImGui::Text("x %.3f\t y %.3f\t z %.3f", pos.x, pos.y, pos.z);
 	ImGui::End();
 
-	// clear the screen
-	glClear(GL_COLOR_BUFFER_BIT);
+	ImGui::SetNextWindowPos(ImVec2(10, 85), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(430, 460), ImGuiCond_FirstUseEver);
+	ImGui::Begin("Framebuffer Debug");
+	if (ImGui::BeginTabBar("FramebufferTextures")) {
+		for (const DebugTexture &debug_texture : debug_textures) {
+			if (debug_texture.texture_id == 0 || debug_texture.width <= 0 ||
+				debug_texture.height <= 0)
+				continue;
+
+			if (ImGui::BeginTabItem(debug_texture.name)) {
+				ImGui::Text("Texture %u | %d x %d", debug_texture.texture_id,
+							debug_texture.width, debug_texture.height);
+
+				ImVec2 available = ImGui::GetContentRegionAvail();
+				float preview_width = available.x;
+				float preview_height = preview_width *
+					static_cast<float>(debug_texture.height) /
+					static_cast<float>(debug_texture.width);
+				if (preview_height > available.y && preview_height > 0.0f) {
+					const float scale = available.y / preview_height;
+					preview_width *= scale;
+					preview_height *= scale;
+				}
+
+				const ImVec2 uv0 = debug_texture.flip_vertical ? ImVec2(0.0f, 1.0f)
+																 : ImVec2(0.0f, 0.0f);
+				const ImVec2 uv1 = debug_texture.flip_vertical ? ImVec2(1.0f, 0.0f)
+																 : ImVec2(1.0f, 1.0f);
+				ImGui::Image(
+					reinterpret_cast<ImTextureID>(
+						static_cast<intptr_t>(debug_texture.texture_id)),
+					ImVec2(preview_width, preview_height), uv0, uv1);
+				ImGui::EndTabItem();
+			}
+		}
+		ImGui::EndTabBar();
+	}
+	ImGui::End();
 
 	// Rendering
 	ImGui::Render();

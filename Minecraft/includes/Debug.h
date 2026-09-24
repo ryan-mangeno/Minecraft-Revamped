@@ -9,6 +9,9 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <iostream>
 #include <stdio.h>
+#include <vector>
+
+#include "DebugTexture.h"
 
 #ifdef _WIN32
 #define ASSERT(x)                                                              \
@@ -34,7 +37,7 @@ class Gui {
 public:
   Gui(GLFWwindow *);
   ~Gui();
-  void handle_gui();
+  void handle_gui(const std::vector<DebugTexture> &debug_textures);
 
 private:
   GLFWwindow *m_window;

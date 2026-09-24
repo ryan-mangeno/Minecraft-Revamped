@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "Log.h"
+#include "render_defines.h"
 #include "util.h"
 
 #include <glad/glad.h>
@@ -117,20 +118,25 @@ void Shader::init_shaders() {
   Shader *model_shader = new Shader((shader_path / "model.glsl").string());
   Shader *depth_shader =
       new Shader((shader_path / "depth_shader.glsl").string());
+  Shader *hdr_shader = new Shader((shader_path / "hdr.glsl").string());
 
   m_shader_location_cache["main_shader"] = main_shader;
   m_shader_location_cache["model_shader"] = model_shader;
   m_shader_location_cache["depth_shader"] = depth_shader;
+  m_shader_location_cache["hdr_shader"] = hdr_shader;
 
   main_shader->bind();
-
-  main_shader->set_uniform1i("tex", 0);
-
+  main_shader->set_uniform1i("uAtlas", ATLAS_TEXTURE_SLOT);
+  main_shader->set_uniform1i("uShadowMap", SHADOW_MAP_TEXTURE_SLOT);
   main_shader->unbind();
 
   model_shader->bind();
-  model_shader->set_uniform1i("texture_diffuse1", 1);
+  model_shader->set_uniform1i("texture_diffuse1", DIFFUSE_TEXTURE_SLOT);
   model_shader->unbind();
+
+  hdr_shader->bind();
+  hdr_shader->set_uniform1i("uHdrTexture", HDR_TEXTURE_SLOT);
+  hdr_shader->unbind();
 }
 
 void Shader::bind_shader_id(GLint id) { glUseProgram(id); }
