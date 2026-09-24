@@ -37,8 +37,11 @@ Texture::Texture(const std::string &path, int num_sprites_vert)
 Texture &Texture::get_texture(int index) { return m_textures[index]; }
 
 void Texture::init_textures() {
-  m_textures[0] =
+  m_textures[block_atlas_index] =
       Texture((get_resource_path() / "textures/block_map.png").string(), 16);
+
+  m_textures[block_normal_atlas_index] = Texture(
+      (get_resource_path() / "texture/block_map_normal.png").string(), 16);
 }
 
 void Texture::bind(GLuint slot /*= 0*/) const {

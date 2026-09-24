@@ -24,6 +24,9 @@
 
 class Texture
 {
+public:
+	static constexpr std::size_t block_atlas_index = 0;
+	static constexpr std::size_t block_normal_atlas_index = 1;
 
 private:
 
