@@ -51,7 +51,7 @@ private:
   float m_sun_speed{0.05f};
   float m_sun_theta{0.0f};
 
-  float m_ambient_strength{0.5f};
+  float m_ambient_strength{0.3f};
   float m_specular_strength{1.0f};
   float m_shininess{32.f};
 

@@ -7,7 +7,7 @@ std::array<Texture, 4> Texture::m_textures;
 
 // @param numSpritesVert the number of sprites on a vertical column so when we
 // do height/numSpritesVert it will give sprite size
-Texture::Texture(const std::string &path, int num_sprites_vert)
+Texture::Texture(const std::string &path, int num_sprites_vert, int format)
     : m_id(0), m_file_path(path), m_img_bytes(nullptr), m_width(0), m_bpp(0),
       m_height(0) {
 
@@ -22,8 +22,8 @@ Texture::Texture(const std::string &path, int num_sprites_vert)
   GlCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
   GlCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
 
-  GlCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, m_width, m_height, 0,
-                      GL_RGBA, GL_UNSIGNED_BYTE, m_img_bytes));
+  GlCall(glTexImage2D(GL_TEXTURE_2D, 0, format, m_width, m_height, 0, GL_RGBA,
+                      GL_UNSIGNED_BYTE, m_img_bytes));
   glGenerateMipmap(GL_TEXTURE_2D);
 
   // GlCall(glBindTexture(GL_TEXTURE_2D, 0));
@@ -38,10 +38,12 @@ Texture &Texture::get_texture(int index) { return m_textures[index]; }
 
 void Texture::init_textures() {
   m_textures[block_atlas_index] =
-      Texture((get_resource_path() / "textures/block_map.png").string(), 16);
+      Texture((get_resource_path() / "textures/block_map.png").string(), 16,
+              GL_SRGB_ALPHA);
 
-  m_textures[block_normal_atlas_index] = Texture(
-      (get_resource_path() / "texture/block_map_normal.png").string(), 16);
+  m_textures[block_atlas_normal_index] =
+      Texture((get_resource_path() / "textures/block_map_normal.png").string(),
+              16, GL_RGBA);
 }
 
 void Texture::bind(GLuint slot /*= 0*/) const {

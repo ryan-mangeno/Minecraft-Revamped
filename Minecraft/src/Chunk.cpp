@@ -5,6 +5,7 @@
 #include "World.h"
 #include "constants.h"
 #include "math_util.h"
+#include "render_defines.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -608,6 +609,13 @@ void Chunk::on_update() {
                             (void *)offsetof(Vertex, tex_coords));
       glEnableVertexAttribArray(2);
 
+      glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                            (void *)offsetof(Vertex, tangent));
+      glEnableVertexAttribArray(3);
+
+      glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                            (void *)offsetof(Vertex, bitangent));
+
       glGenBuffers(1, &m_ebo);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER,
@@ -648,8 +656,11 @@ void Chunk::try_render(Shader *shader) {
   if (m_render && m_ready) {
     shader->bind();
 
-    Texture::get_texture(0).bind(0);
-    shader->set_uniform1i("uAtlas", 0);
+    Texture::get_texture(0).bind(ATLAS_TEXTURE_SLOT);
+    shader->set_uniform1i("uAtlas", ATLAS_TEXTURE_SLOT);
+
+    Texture::get_texture(1).bind(ATLAS_NORMAL_TEXTURE_SLOT);
+    shader->set_uniform1i("uAtlasNormal", ATLAS_NORMAL_TEXTURE_SLOT);
 
     glBindVertexArray(m_vao);
 

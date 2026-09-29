@@ -1,12 +1,15 @@
 #ifndef MATH_UTIL_H
 #define MATH_UTIL_H
 
+#include <cstdint>
 #include <glm/glm.hpp>
 
 struct Vertex {
   glm::vec3 position;
   glm::vec3 normal;
   glm::vec2 tex_coords;
+  glm::vec3 tangent;
+  glm::vec3 bitangent;
 };
 
 enum Corner {
@@ -18,7 +21,32 @@ enum Corner {
 
 enum Direction : int8_t { NORTH = 0, SOUTH, EAST, WEST, UP, DOWN, NONE };
 
-constexpr glm::vec3 direction_vec[6] = {{0, 0, 1},  {0, 0, -1}, {1, 0, 0},
-                                        {-1, 0, 0}, {0, 1, 0},  {0, -1, 0}};
+// All three arrays use Direction order: NORTH, SOUTH, EAST, WEST, UP, DOWN.
+// Tangent follows increasing texture U; bitangent follows increasing texture V.
+constexpr glm::vec3 direction_vec[6] = {
+    {0, 0, -1}, // NORTH: z = 0
+    {0, 0, 1},  // SOUTH: z = 1
+    {1, 0, 0},  // EAST:  x = 1
+    {-1, 0, 0}, // WEST:  x = 0
+    {0, 1, 0},  // UP:    y = 1
+    {0, -1, 0}, // DOWN:  y = 0
+};
 
+constexpr glm::vec3 tangent_vec[6] = {
+    {-1, 0, 0}, // NORTH
+    {1, 0, 0},  // SOUTH
+    {0, 0, -1}, // EAST
+    {0, 0, 1},  // WEST
+    {1, 0, 0},  // UP
+    {-1, 0, 0}, // DOWN
+};
+
+constexpr glm::vec3 bitangent_vec[6] = {
+    {0, 1, 0},  // NORTH
+    {0, 1, 0},  // SOUTH
+    {0, 1, 0},  // EAST
+    {0, 1, 0},  // WEST
+    {0, 0, -1}, // UP
+    {0, 0, -1}, // DOWN
+};
 #endif
