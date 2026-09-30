@@ -615,6 +615,7 @@ void Chunk::on_update() {
 
       glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                             (void *)offsetof(Vertex, bitangent));
+      glEnableVertexAttribArray(4);
 
       glGenBuffers(1, &m_ebo);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);

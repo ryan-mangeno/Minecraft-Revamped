@@ -10,7 +10,7 @@ layout (location = 4) in vec3 aBiTangent;
 out vec3 Normal;
 out vec2 TexCoord;
 out vec3 Tangent;
-out vec3 aBiTangent;
+out vec3 BiTangent;
 
 out vec4 FragPosLightSpace;
 out vec3 WorldPos;
@@ -87,7 +87,10 @@ void main()
     vec2 tex_coord = TexCoord / vec2(textureSize(uAtlas, 0));
 
     // [0,1] -> [-1,1]
-    vec3 normal = normalize(((texture(uAtlasNormal, tex_coord).rgb * 2.0f) - 1.0f) + Normal);
+    vec3 sampled_norm = texture(uAtlasNormal, tex_coord).rgb * 2.0f - 1.0f;
+    vec3 normal = normalize(sampled_norm.x * Tangent
+                          + sampled_norm.y * BiTangent
+                          + sampled_norm.z * Normal);
 
     vec3 viewDir = normalize(uCamPos - WorldPos);
     vec3 reflectDir = reflect(uSunDir, normal);

@@ -10,6 +10,22 @@ struct Vertex {
   glm::vec2 tex_coords;
   glm::vec3 tangent;
   glm::vec3 bitangent;
+
+  Vertex() = default;
+
+  Vertex(const glm::vec3 &position, const glm::vec3 &normal,
+         const glm::vec2 &tex_coords)
+      : position(position), normal(normal), tex_coords(tex_coords) {
+    if (glm::abs(normal.x) > 0.5f) {
+      tangent = glm::vec3(0.0f, 0.0f, -normal.x);
+    } else if (glm::abs(normal.y) > 0.5f) {
+      tangent = glm::vec3(normal.y, 0.0f, 0.0f);
+    } else {
+      tangent = glm::vec3(normal.z, 0.0f, 0.0f);
+    }
+
+    bitangent = glm::cross(normal, tangent);
+  }
 };
 
 enum Corner {
