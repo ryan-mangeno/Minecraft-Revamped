@@ -54,6 +54,10 @@ uniform float uShininess;
 uniform sampler2D uAtlas;
 uniform sampler2D uAtlasNormal;
 uniform sampler2D uShadowMap;
+uniform sampler2D uAtlasAlbedo;
+uniform sampler2D uAtlasAo;
+uniform sampler2D uAtlasRoughness;
+uniform sampler2D uAtlasMetallic;
 
 const int MAX_POINT_LIGHTS = 16;
 uniform int uPointLightCount;
@@ -95,12 +99,17 @@ void main()
     vec3 viewDir = normalize(uCamPos - WorldPos);
     vec3 reflectDir = reflect(uSunDir, normal);
 
-    float specular = uSpecularStrength * pow(max(0.0, dot(reflectDir, viewDir)), uShininess);
+    float roughness = texture(uAtlasRoughness, tex_coord).r;
+    float shininess = mix(uShininess, 1.0f, roughness);
+
+    float specular = uSpecularStrength * pow(max(0.0, dot(reflectDir, viewDir)), shininess);
     float diffuse = max(0.0, dot(normal, -uSunDir));
 
     // sun coloring is just white
     vec3 DirectSunLighting = vec3(1.0f) * (specular + diffuse);
-    vec3 OtherLighting = vec3(uAmbientStrength); // build up the other lighting
+
+    float ao = texture(uAtlasAo, tex_coord).r;
+    vec3 OtherLighting = vec3(uAmbientStrength * ao); // build up the other lighting
 
     float intensity = 32.0f;
     // cutoff for point lights

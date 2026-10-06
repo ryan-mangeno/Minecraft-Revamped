@@ -18,8 +18,15 @@
 class Texture {
 
 public:
-  static const int block_atlas_index = 0;
-  static const int block_atlas_normal_index = 1;
+  enum TextureIndices : int {
+    block_atlas_index = 0,
+    block_atlas_normal_index,
+    block_albedo_index,
+    block_ao_index,
+    block_metallic_index,
+    block_roughness_index,
+    MAX_TEXTURE_INDEX,
+  };
 
 public:
   Texture() = default;
@@ -35,14 +42,14 @@ public:
   inline int get_sprite_size() const { return m_sprite_size; };
   static Texture &get_texture(int index);
 
-  inline GLuint &get_texture_id() { return m_id; };
+  inline uint32_t &get_texture_id() { return m_id; };
 
 private:
-  GLuint m_id;
+  uint32_t m_id;
   std::string m_file_path;
   unsigned char *m_img_bytes;
   int m_width, m_height, m_bpp, m_sprite_size;
-  static std::array<Texture, 4> m_textures;
+  static std::array<Texture, MAX_TEXTURE_INDEX> m_textures;
 
   Texture(const std::string &path, int num_sprites, int format);
 };

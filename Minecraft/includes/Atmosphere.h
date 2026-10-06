@@ -52,7 +52,7 @@ private:
   float m_sun_theta{0.0f};
 
   float m_ambient_strength{0.3f};
-  float m_specular_strength{1.0f};
+  float m_specular_strength{8.0f};
   float m_shininess{32.f};
 
   FBO m_shadow_map;

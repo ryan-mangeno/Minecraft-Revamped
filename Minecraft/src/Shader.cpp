@@ -125,9 +125,14 @@ void Shader::init_shaders() {
   m_shader_location_cache["depth_shader"] = depth_shader;
   m_shader_location_cache["hdr_shader"] = hdr_shader;
 
+  // these need to be moved to be set before the shaders that use them but i
+  // dont think i will go over the ammount of allowed active textures units at
+  // one time
+
   main_shader->bind();
   main_shader->set_uniform1i("uAtlas", ATLAS_TEXTURE_SLOT);
   main_shader->set_uniform1i("uShadowMap", SHADOW_MAP_TEXTURE_SLOT);
+
   main_shader->unbind();
 
   model_shader->bind();

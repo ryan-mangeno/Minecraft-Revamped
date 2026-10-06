@@ -663,6 +663,18 @@ void Chunk::try_render(Shader *shader) {
     Texture::get_texture(1).bind(ATLAS_NORMAL_TEXTURE_SLOT);
     shader->set_uniform1i("uAtlasNormal", ATLAS_NORMAL_TEXTURE_SLOT);
 
+    Texture::get_texture(2).bind(ATLAS_ALBEDO_TEXTURE_SLOT);
+    shader->set_uniform1i("uAtlasAlbedo", ATLAS_ALBEDO_TEXTURE_SLOT);
+
+    Texture::get_texture(3).bind(ATLAS_AO_TEXTURE_SLOT);
+    shader->set_uniform1i("uAtlasAo", ATLAS_AO_TEXTURE_SLOT);
+
+    Texture::get_texture(4).bind(ATLAS_METALLIC_TEXTURE_SLOT);
+    shader->set_uniform1i("uAtlasMetallic", ATLAS_METALLIC_TEXTURE_SLOT);
+
+    Texture::get_texture(5).bind(ATLAS_ROUGHNESS_TEXTURE_SLOT);
+    shader->set_uniform1i("uAtlasRoughness", ATLAS_ROUGHNESS_TEXTURE_SLOT);
+
     glBindVertexArray(m_vao);
 
     glm::mat4 model = glm::mat4(1.0f);
