@@ -86,6 +86,20 @@ float pcs_sample(float x, float y, float cur_depth, float bias, float len) {
     return sun_visibility / (len*len);
 }
 
+float DistributionGGX(vec3 normal, vec3 halfwayDirection, float roughness)
+{
+    float a = roughness * roughness;
+    float a2 = a * a;
+
+    float NdotH = max(dot(normal, halfwayDirection), 0.0);
+    float NdotH2 = NdotH * NdotH;
+
+    float denominator = NdotH2 * (a2 - 1.0) + 1.0;
+    denominator = 3.14159265 * denominator * denominator;
+
+    return a2 / max(denominator, 0.000001);
+}
+
 void main()
 {
     vec2 tex_coord = TexCoord / vec2(textureSize(uAtlas, 0));
@@ -101,6 +115,25 @@ void main()
 
     float roughness = texture(uAtlasRoughness, tex_coord).r;
     float shininess = mix(uShininess, 1.0f, roughness);
+
+    float metallic = texture(uAtlasMetallic, tex_coord).r;
+    vec3 albedo = texture(uAtlasAlbedo, tex_coord).rgb;
+
+    // Base reflectance
+    vec3 F0 = mix(vec3(0.04), albedo, metallic);
+
+    // Direction from surface toward sun
+    vec3 lightDir = normalize(-uSunDir);
+
+    // Halfway vector
+    vec3 H = normalize(viewDir + lightDir);
+
+    // Fresnel-Schlick approximation
+    vec3 F = F0 + (vec3(1.0) - F0) *
+         pow(1.0 - max(dot(H, viewDir), 0.0), 5.0);
+
+    // normal distribution
+    float D = DistributionGGX(normal, H, roughness);
 
     float specular = uSpecularStrength * pow(max(0.0, dot(reflectDir, viewDir)), shininess);
     float diffuse = max(0.0, dot(normal, -uSunDir));
