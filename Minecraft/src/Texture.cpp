@@ -58,9 +58,6 @@ Texture::Texture(const std::string &path, int num_sprites_vert, int format)
 Texture &Texture::get_texture(int index) { return m_textures[index]; }
 
 void Texture::init_textures() {
-  m_textures[block_atlas_index] =
-      Texture((get_resource_path() / "textures/block_map.png").string(), 16,
-              GL_SRGB8_ALPHA8);
   m_textures[block_atlas_normal_index] =
       Texture((get_resource_path() / "textures/block_map_normal.png").string(),
               16, GL_RGBA8);

@@ -130,7 +130,7 @@ void Shader::init_shaders() {
   // one time
 
   main_shader->bind();
-  main_shader->set_uniform1i("uAtlas", ATLAS_TEXTURE_SLOT);
+  main_shader->set_uniform1i("uAtlasAlbedo", ATLAS_ALBEDO_TEXTURE_SLOT);
   main_shader->set_uniform1i("uShadowMap", SHADOW_MAP_TEXTURE_SLOT);
 
   main_shader->unbind();

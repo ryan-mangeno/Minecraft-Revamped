@@ -657,10 +657,6 @@ void Chunk::try_render(Shader *shader) {
   if (m_render && m_ready) {
     shader->bind();
 
-    Texture::get_texture(0).bind(ATLAS_TEXTURE_SLOT);
-    shader->set_uniform1i("uAtlas", ATLAS_TEXTURE_SLOT);
-
-    Texture::get_texture(1).bind(ATLAS_NORMAL_TEXTURE_SLOT);
     shader->set_uniform1i("uAtlasNormal", ATLAS_NORMAL_TEXTURE_SLOT);
 
     Texture::get_texture(2).bind(ATLAS_ALBEDO_TEXTURE_SLOT);

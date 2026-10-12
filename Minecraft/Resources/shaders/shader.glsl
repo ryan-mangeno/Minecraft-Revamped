@@ -51,9 +51,8 @@ uniform float uAmbientStrength;
 uniform float uSpecularStrength;
 uniform float uShininess;
 
-uniform sampler2D uAtlas;
-uniform sampler2D uAtlasNormal;
 uniform sampler2D uShadowMap;
+uniform sampler2D uAtlasNormal;
 uniform sampler2D uAtlasAlbedo;
 uniform sampler2D uAtlasAo;
 uniform sampler2D uAtlasRoughness;
@@ -102,7 +101,7 @@ float DistributionGGX(vec3 normal, vec3 halfwayDirection, float roughness)
 
 void main()
 {
-    vec2 tex_coord = TexCoord / vec2(textureSize(uAtlas, 0));
+    vec2 tex_coord = TexCoord / vec2(textureSize(uAtlasAlbedo, 0));
 
     // [0,1] -> [-1,1]
     vec3 sampled_norm = texture(uAtlasNormal, tex_coord).rgb * 2.0f - 1.0f;
@@ -170,5 +169,5 @@ void main()
     float sun_visibility = pcs_sample(frag_pos.x, frag_pos.y, cur_depth, bias, sample_box_len);
     // if its visable to sun
     vec3 final_lighting = OtherLighting + DirectSunLighting * sun_visibility;
-    FragColor = texture(uAtlas, tex_coord) * vec4(final_lighting, 1.0f);
+    FragColor = texture(uAtlasAlbedo, tex_coord) * vec4(final_lighting, 1.0f);
 }
